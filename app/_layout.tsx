@@ -5,7 +5,6 @@ import SignInScreen from "./Auth/SignInScreen";
 import SignUpScreen from "./Auth/SignUpScreen";
 import TabLayout from "./tabs/tabs";
 import NotificationScreen from "./components/Notification";
-import ProductDetailScreen from "./components/productdetail";
 import CustomerServiceScreen from "./components/CustomerService";
 import MyOrdersScreen from "./orders/Myorder";
 import HelpCenterScreen from "./components/HelpCenter";
@@ -18,6 +17,7 @@ import TrackOrder from "./orders/TrackOrder";
 import MyDetails from "./Auth/Mydetails";
 import UserInfo from "./Auth/MyInfo";
 import WishListScreen from "./components/WishList";
+import ProductDetailScreen from "./components/productdetail";
 const Stack = createNativeStackNavigator();
 export default function RootLayout() {
   return (

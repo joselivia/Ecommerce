@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import AccountScreen from '../pages/Account';
 import CartScreen from '../pages/Cart';
-import SearchScreen from '../pages/Search';
 import WishlistScreen from '../pages/create';
 import HomeScreen from '../pages/home';
+import WalletScreen from '../pages/Wallet';
 
 const Tab = createBottomTabNavigator();
 export default function TabLayout() {
@@ -27,7 +27,7 @@ export default function TabLayout() {
       />
   <Tab.Screen
         name="Wallet"
-        component={SearchScreen}
+        component={WalletScreen}
         options={{
           tabBarIcon: ({ color }) => <Ionicons name="wallet" size={24} color={color} />,
         }}

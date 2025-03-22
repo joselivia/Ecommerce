@@ -5,87 +5,21 @@ import { NavigationProp } from '@react-navigation/native';
 interface Props {
   navigation: NavigationProp<any>;
 }
-export const mockDatabase = [
-  {
-    id: '1',
-    name: 'Nike T-Shirt',
-    size: 'L',
-    price: 29.99,
-    image: require('../../assets/images/icon.png'), 
-  },
-  {
-    id: '2',
-    name: 'Levi\'s Jeans',
-    size: '32',
-    price: 59.99,
-    image: require('../../assets/images/icon.png'), 
-  },
-  {
-    id: '3',
-    name: 'Adidas Sneakers',
-    size: '10',
-    price: 79.99,
-    image: require('../../assets/images/icon.png'), 
-  },
-];
 
-export default function WishlistScreen ({navigation}:Props) {
-  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setWishlistItems(mockDatabase);
-    }, 2000);
-  }, []);
-
-  const handleDelete = (id: string) => {
-    setWishlistItems(prevItems => prevItems.filter(item => item.id !== id));
-  };
-
-  const handleAddToCart = (id: string) => {
-    console.log(`Item with ID: ${id} added to cart`);
-  };
-
+export default function CreateScreen ({navigation}:Props) {
   return (
     <View style={styles.container}>
     <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                   <Ionicons name="arrow-back-outline" size={24} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.Title}>WishList</Text>
+                <Text style={styles.Title}>Create</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("notification")}>
                   <Ionicons name="notifications-outline" size={24} color="black" />
                 </TouchableOpacity>
               </View>
-      {wishlistItems.length === 0 ? (
-        <Text style={styles.loadingText}>Loading Wishlist...</Text>
-      ) : (
-        <ScrollView>
-          {wishlistItems.map(item => (
-            <View key={item.id} style={styles.card}>
-              <Image
-                source={item.image} 
-                style={styles.productImage}
-              />
-              <View style={styles.productDetails}>
-                <Text style={styles.productTitle}>{item.name}</Text>
-                <Text style={styles.productSize}>Size: {item.size}</Text>
-                <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
-              </View>
-              <View style={styles.rightSection}>
-                <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteIcon}>
-                  <MaterialIcons name="delete" size={24} color="red" />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleAddToCart(item.id)} style={styles.addToCartButton}>
-                  <Text style={styles.addToCartText}>Add to Cart</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+     
+      </View>
   );
 };
 

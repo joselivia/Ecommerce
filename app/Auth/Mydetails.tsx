@@ -9,11 +9,11 @@ interface Props {
     navigation: NavigationProp<any>;
 }
 export default function MyDetails({navigation}:Props) {
-  const [name, setName] = useState('Cody Fisher');
-  const [email, setEmail] = useState('cody.fisher45@example');
-  const [date, setDate] = useState(new Date(1990, 6, 12));
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [gender, setGender] = useState('Male');
+  const [gender, setGender] = useState('');
   const [countryCode, setCountryCode] = useState<CountryCode>('US'); 
   const [callingCode, setCallingCode] = useState('+1');
   const [phone, setPhone] = useState('');
@@ -63,18 +63,19 @@ export default function MyDetails({navigation}:Props) {
 
       <Text style={{ marginBottom: 5, marginTop: 15 }}>Phone Number</Text>
       <View style={styles.phoneContainer}>
-        <CountryPicker
-          withFilter
-          withFlag
-          withCallingCode
-          withEmoji
-          countryCode={countryCode}
-          onSelect={(country) => {
-            setCountryCode(country.cca2);
-            setCallingCode(`+${country.callingCode[0]}`);
-          }}
-          containerButtonStyle={styles.countryPicker}
-        />
+      <CountryPicker
+  withFilter
+  withFlag
+  withCallingCode
+  withEmoji
+  countryCode={countryCode || 'US'}
+  onSelect={(country) => {
+    setCountryCode(country.cca2 || 'US');
+    setCallingCode(`+${country.callingCode?.[0] || '1'}`);
+  }}
+  containerButtonStyle={styles.countryPicker}
+/>
+
         <TextInput value={callingCode} editable={false} style={styles.callingCode} />
         <TextInput
           value={phone}

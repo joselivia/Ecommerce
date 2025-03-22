@@ -68,20 +68,16 @@ export default function SavedBoardsScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.boardCard}>
-            {/* Display only the first 4 images */}
             <View style={styles.imagesContainer}>
               {item.images.slice(0, 4).map((image, index) => (
                 <Image key={index} source={image} style={styles.boardImage} />
               ))}
             </View>
 
-            {/* Collection Name + Item Count */}
-            <View style={styles.boardInfo}>
+               <View style={styles.boardInfo}>
               <Text style={styles.boardTitle}>{item.title}</Text>
               <Text style={styles.itemCount}>{item.itemCount} items</Text>
-
-              {/* Icons */}
-              <View style={styles.iconsContainer}>
+         <View style={styles.iconsContainer}>
                 <TouchableOpacity>
                   <Icon name="share-variant" size={22} color="black" />
                 </TouchableOpacity>
@@ -117,14 +113,14 @@ const styles = StyleSheet.create({
   },
   imagesContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // Wrap images in rows
+    flexWrap: "wrap", 
   },
   boardImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
+    width: 70,
+    height: 80,
+    borderRadius: 8,
     marginRight: 5,
-    marginBottom: 5, // Ensures spacing in case of wrapping
+    marginBottom: 5, 
   },
   boardInfo: { marginTop: 8 },
   boardTitle: { fontSize: 16, fontWeight: "bold" },

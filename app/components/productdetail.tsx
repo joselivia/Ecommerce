@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { NavigationProp, RouteProp } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 interface Product {
   name: string;
@@ -10,10 +10,12 @@ interface Product {
   discountPrice: string;
 }
 
-interface Props {
-  navigation: NavigationProp<any>;
-  route: RouteProp<{ params: { product: Product } }, "params">;
-}
+type RootStackParamList = {
+  ProductDetail: { product: Product };
+  notification: undefined;
+};
+
+type Props = NativeStackScreenProps<RootStackParamList, "ProductDetail">;
 export default function ProductDetailScreen({ navigation, route }: Props) {
   const { product } = route.params;
   return (
@@ -51,14 +53,15 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#f5f5f5",
+    padding: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    marginBottom: 16,
+  
   },
   title: { fontSize: 18, fontWeight: "bold" },
   productImage: {
