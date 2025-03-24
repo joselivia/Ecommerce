@@ -16,7 +16,7 @@ export default function Index({ navigation }: Props) {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('tabs')}
+        onPress={() => navigation.navigate('signIn')}
       >
         <Text style={styles.buttonText}>Get Started</Text>
         <AntDesign name="arrowright" size={20} color="white" style={styles.icon} />

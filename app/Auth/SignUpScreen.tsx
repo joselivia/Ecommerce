@@ -1,15 +1,43 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { createUser } from '@/lib/config';
+import Toast from "react-native-toast-message";
 interface Props {
   navigation: NavigationProp<any>;
 }
 export default function SignUpScreen({navigation}: Props) {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+   const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const submit=async()=>{
+      if(!email || !username || !password) {
+        Toast.show({
+          type: "error",
+          text1: "Please fill all the fields",
+
+        });
+      return;
+      }
+       setIsSubmitting(true);
+    try{  
+    await createUser(email,username,password);
+      Toast.show({ type: "success", text1: "Account created successfully" });
+ navigation.navigate("SignInScreen");
+    }catch(error:any){
+        console.log(error);
+        Toast.show({ type: "error", text1: error.message || "Signup failed" });
+        throw new Error(error);
+    } finally{
+        setIsSubmitting(false);
+    } 
+      }
+    
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      
       <TouchableOpacity style={styles.socialButton}>
         <Ionicons name="logo-google" size={20} />
         <Text style={styles.socialButtonText}>Continue With Google</Text>
@@ -19,33 +47,47 @@ export default function SignUpScreen({navigation}: Props) {
         <Ionicons name="logo-twitter" size={20} color="#1500af" />
         <Text style={styles.socialButtonText}>Continue With Twitter</Text>
       </TouchableOpacity>
-
       <TextInput
+        style={styles.input} 
+        placeholder="Enter your Username"
+        placeholderTextColor="#777"
+        value={username}
+        onChangeText={setUsername}
+       />
+       <TextInput
         style={styles.input}
         placeholder="Enter your email address"
         placeholderTextColor="#777"
+        value={email}
+        onChangeText={setEmail}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        placeholderTextColor="#777"
-        secureTextEntry
-      />
-
-      <View style={styles.checkboxContainer}>
-        <TouchableOpacity style={styles.checkbox} />
-        <Text style={styles.checkboxText}>Agree to our Terms of use and Privacy Policy</Text>
-
-      </View>
-      <View style={styles.checkboxContainer}>
-        <TouchableOpacity style={styles.checkbox} />
-        <Text style={styles.checkboxText}>Agree to our Terms of use and Privacy Policy</Text>
+<View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Enter your password"
+          placeholderTextColor="#777"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons name={showPassword ? "eye" : "eye-off"} size={20} color="#777" />
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+
+ 
+<TouchableOpacity
+  style={styles.button}
+  onPress={submit}
+  disabled={isSubmitting}
+>
+  {isSubmitting ? (
+    <ActivityIndicator color="white" />
+  ) : (
+    <Text style={styles.buttonText}>Sign Up</Text>
+  )}
+</TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('signIn')}>
   <Text style={styles.linkText}>Already have an account? Log in</Text>
@@ -76,6 +118,20 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       marginBottom: 15,
     },
+    passwordContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+      borderRadius: 5,
+      paddingHorizontal: 15,
+      marginBottom: 15,
+    },
+    passwordInput: {
+      flex: 1,
+      paddingVertical: 15,
+      color: "black",
+      
+    },
     socialButtonText: {
       color: '#a69aff',
       marginLeft: 10,
@@ -104,20 +160,5 @@ boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
       textAlign: 'center',
       marginTop: 10,
     },
-    checkboxContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 15,
-    },
-    checkbox: {
-      width: 20,
-      height: 20,
-      backgroundColor: '#222',
-      marginRight: 10,
-      borderRadius: 3,
-    },
-    checkboxText: {
-      color: '#777',
-      fontSize: 14,
-    },
+
 });

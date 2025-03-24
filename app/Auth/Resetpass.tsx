@@ -13,12 +13,11 @@ interface Props {
 export default function ResetPassScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Your Password</Text>
     <View>
         <Text>Enter your email and a link will be send to reset your password.</Text>
     </View>
 <View>
-    <Text>Email Address</Text>
+    <Text  style={styles.title}>Email Address</Text>
 </View>
       <TextInput
         style={styles.input}
@@ -27,15 +26,12 @@ export default function ResetPassScreen({ navigation }: Props) {
         secureTextEntry={false}
       />
 
-<TouchableOpacity style={styles.button}>
+<TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Resetverification')}>
         <Text style={styles.buttonText}>Send</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
-      <View style={styles.container}>
-        <Text style={styles.linkText}>Back to </Text>
-        <Text style={styles.loginText}>Login</Text>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('signIn')}>
+  <Text style={styles.linkText}>Back to Login</Text>
+</TouchableOpacity>
    
     </View>
   );
@@ -49,10 +45,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "black",
-    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    marginTop: 3,
+
   },
 
   input: {
@@ -75,8 +70,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   linkText: {
-    color: "#8000FF",
+    color: "black",
     textAlign: "center",
+    fontSize: 16,
     marginTop: 10,
   },
   loginText: {

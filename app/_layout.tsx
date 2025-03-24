@@ -18,15 +18,21 @@ import MyDetails from "./Auth/Mydetails";
 import UserInfo from "./Auth/MyInfo";
 import WishListScreen from "./components/WishList";
 import ProductDetailScreen from "./components/productdetail";
+import Toast from "react-native-toast-message";
+import ResetPassScreen from "./Auth/Resetpass";
+import VerificationScreen from "./Auth/Resetverification";
 const Stack = createNativeStackNavigator();
 export default function RootLayout() {
   return (
-    <Stack.Navigator initialRouteName="tabs">
-      <Stack.Screen name="tabs" component={TabLayout} options={{ headerShown: false }} />
+    <>
+    <Stack.Navigator initialRouteName="signIn">
+         <Stack.Screen name="tabs" component={TabLayout} options={{ headerShown: false }} />
     <Stack.Screen name="index" component={Index} options={{ headerShown: false }}  />
     <Stack.Screen name="notification" component={NotificationScreen} options={{ headerShown: false }}  />
-        <Stack.Screen name="signIn" component={SignInScreen} options={{ title: "Sign In"}}/>
-        <Stack.Screen name="signUp" component={SignUpScreen} options={{ title: "Sign Up"}}/>
+        <Stack.Screen name="signIn" component={SignInScreen} options={{ title: "Sign In", headerTitleAlign:"center"}}/>
+        <Stack.Screen name="signUp" component={SignUpScreen} options={{ title: "Sign Up",headerTitleAlign:"center"}}/>
+        <Stack.Screen name="resetPassword" component={ResetPassScreen} options={{ title: "Reset Password",headerTitleAlign:"center"}}/>
+        <Stack.Screen name="Resetverification" component={VerificationScreen} options={{ title: "Verification",headerTitleAlign:"center"}}/>
         <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Customerservice" component={CustomerServiceScreen} options={{ headerShown: false }} />
         <Stack.Screen name="MyOrder" component={MyOrdersScreen} options={{ headerShown: false }} />
@@ -43,5 +49,7 @@ export default function RootLayout() {
         <Stack.Screen name="wishlist" component={WishListScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
+      <Toast/>
+      </>
   );
 }

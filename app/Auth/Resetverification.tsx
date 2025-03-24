@@ -13,10 +13,9 @@ interface Props {
 export default function VerificationScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Verification</Text>
 
     <View>
-        <Text>Verify Your Code</Text>
+        <Text style={styles.title}>Verify Your Code</Text>
     </View>
 
       <TextInput
@@ -25,13 +24,10 @@ export default function VerificationScreen({ navigation }: Props) {
         placeholderTextColor="#777"
         secureTextEntry={false}
       />
-
-     
       <TouchableOpacity>
-      <View style={styles.container}>
-        <Text style={styles.linkText}>Email not received? </Text>
+      <TouchableOpacity>
         <Text style={styles.loginText}>Resend code</Text>
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
     <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Verify Code</Text>
@@ -48,10 +44,10 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "black",
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "center",
+
   },
 
   input: {
@@ -80,6 +76,9 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: 'blue',
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   
 });

@@ -1,22 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
+import { SignIn } from "@/lib/config";
 interface Props {
   navigation: NavigationProp<any>;
 }
 export default function SignInScreen({ navigation }: Props) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submit = async () => {
+    if (!email || !password) {
+      Toast.show({ type: "error", text1: "Validation Error", text2: "Enter email and password" });
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+       await SignIn(email, password);
+      Toast.show({ type: "success", text1: "Login successful" });
+      navigation.navigate("tabs");
+    } catch (error: any) {
+      if (error.message.includes("Rate limit")) {
+        Toast.show({ type: "error", text1: "Too Many Requests", text2: "Please try again later" });
+      } else {
+        Toast.show({ type: "error", text1: "Login Failed", text2: error.message });
+      }
+  } finally {
+      setIsSubmitting(false);
+  }}
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-
-      <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity style={styles.socialButton}>
         <Ionicons name="logo-google" size={20} />
         <Text style={styles.socialButtonText}>Continue With Google</Text>
       </TouchableOpacity>
@@ -30,19 +54,27 @@ export default function SignInScreen({ navigation }: Props) {
         style={styles.input}
         placeholder="Enter your username or email address"
         placeholderTextColor="#777"
-        secureTextEntry={false}
-      />
+        value={email}
+        onChangeText={setEmail}
+         />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        placeholderTextColor="#777"
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Sign In</Text>
+<View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Enter your password"
+          placeholderTextColor="#777"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons name={showPassword ? "eye" : "eye-off"} size={20} color="#777" />
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
+        {isSubmitting ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Sign In</Text>}
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("resetPassword")}>
         <Text style={styles.linkText}>Forgot your password?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("signUp")}>
@@ -76,6 +108,20 @@ const styles = StyleSheet.create({
   socialButtonText: {
     color: "#a69aff",
     marginLeft: 10,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 15,
+    color: "black",
+    
   },
   input: {
     color: "black",
