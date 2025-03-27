@@ -1,6 +1,8 @@
-import { Account, Avatars, Client, Databases, ID, Query } from "react-native-appwrite";
+import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
+
+
 export const appwriteConfig = {
-  endpoint: "https://cloud.appwrite.io/v1",
+    endpoint: "https://cloud.appwrite.io/v1",
   projectId: "67e14174000f4325195b",
   Platform: "com.joselivia.lekovet",
   databaseId: "67e14c27000a669e1017",
@@ -17,8 +19,9 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
-
+export { client, account, avatars, databases,storage };
 export const createUser = async (
   email: string,
   username: string,
@@ -103,3 +106,4 @@ if (!currentUser || currentUser.documents.length === 0) {
     throw new Error(error);
   }
 }
+
