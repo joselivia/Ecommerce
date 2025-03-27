@@ -13,7 +13,6 @@ interface Props {
 export default function VerificationScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
-
     <View>
         <Text style={styles.title}>Verify Your Code</Text>
     </View>

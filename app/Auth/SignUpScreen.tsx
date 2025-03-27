@@ -4,33 +4,32 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { createUser } from '@/lib/config';
 import Toast from "react-native-toast-message";
+import { router } from 'expo-router';
 interface Props {
   navigation: NavigationProp<any>;
 }
 export default function SignUpScreen({navigation}: Props) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const submit=async()=>{
-      if(!email || !username || !password) {
+      if(!email || !username || !password || !phone) {
         Toast.show({
           type: "error",
           text1: "Please fill all the fields",
-
         });
-      return;
+        return;
       }
        setIsSubmitting(true);
     try{  
-    await createUser(email,username,password);
+    await createUser(email,username,phone,password);
       Toast.show({ type: "success", text1: "Account created successfully" });
- navigation.navigate("SignInScreen");
+ navigation.navigate("signIn");
     }catch(error:any){
-        console.log(error);
-        Toast.show({ type: "error", text1: error.message || "Signup failed" });
-        throw new Error(error);
+        Toast.show({ type: "error", text1:"Signup failed" + error.message });
     } finally{
         setIsSubmitting(false);
     } 
@@ -58,8 +57,17 @@ export default function SignUpScreen({navigation}: Props) {
         style={styles.input}
         placeholder="Enter your email address"
         placeholderTextColor="#777"
+               keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+      />
+          <TextInput
+        style={styles.input}
+        placeholder="Enter phone number"
+               keyboardType="phone-pad"
+        placeholderTextColor="#777"
+        value={phone}
+        onChangeText={setPhone}
       />
 <View style={styles.passwordContainer}>
         <TextInput

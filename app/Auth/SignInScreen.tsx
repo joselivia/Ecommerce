@@ -19,11 +19,10 @@ export default function SignInScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const submit = async () => {
+  const handleSubmit = async () => {
     if (!email || !password) {
       Toast.show({ type: "error", text1: "Validation Error", text2: "Enter email and password" });
-      return;
-    }
+     }
     setIsSubmitting(true);
     try {
        await SignIn(email, password);
@@ -54,6 +53,8 @@ export default function SignInScreen({ navigation }: Props) {
         style={styles.input}
         placeholder="Enter your username or email address"
         placeholderTextColor="#777"
+        secureTextEntry={false}
+        keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
          />
@@ -71,7 +72,7 @@ export default function SignInScreen({ navigation }: Props) {
           <Ionicons name={showPassword ? "eye" : "eye-off"} size={20} color="#777" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={submit} disabled={isSubmitting}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Sign In</Text>}
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("resetPassword")}>

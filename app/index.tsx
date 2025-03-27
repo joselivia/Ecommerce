@@ -6,10 +6,10 @@ import { AntDesign } from '@expo/vector-icons';
 interface Props {
   navigation: NavigationProp<any>;
 }
-
+import { createContext, useContext, useState, useEffect } from "react";
 export default function Index({ navigation }: Props) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
       <Image 
         source={require('../assets/images/R.jpeg')} 
         style={styles.logo} 
