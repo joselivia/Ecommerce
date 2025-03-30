@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 interface Category {
   name: string;
   subcategories: string[];
 }
-
 export default function CategoriesFilterScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isCategoryExpanded, setIsCategoryExpanded] = useState<Record<string, boolean>>({});
   const [selectedGender, setSelectedGender] = useState<string>('All');
-
   const categories: Category[] = [
     {
       name: 'Clothing',
@@ -22,7 +19,6 @@ export default function CategoriesFilterScreen() {
     { name: 'Lingerie', subcategories: [] },
     { name: 'Accessories', subcategories: [] },
   ];
-
   const toggleCategory = (category: string) => {
     setIsCategoryExpanded((prev) => ({
       ...prev,
@@ -74,7 +70,6 @@ export default function CategoriesFilterScreen() {
         renderItem={({ item }) => (
           <View style={styles.categoryContainer}>
             <TouchableOpacity style={styles.categoryHeader} onPress={() => toggleCategory(item.name)}>
-              {/* Add image placeholder here */}
               <View style={styles.categoryImage}></View>
               <Text style={styles.categoryName}>{item.name}</Text>
               <Ionicons
@@ -98,7 +93,6 @@ export default function CategoriesFilterScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 10,
-    backgroundColor: '#eee', // Placeholder for image
+    backgroundColor: '#eee', 
   },
   categoryName: {
     fontSize: 16,

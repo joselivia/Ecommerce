@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { createUser } from '@/lib/config';
 import Toast from "react-native-toast-message";
-import { router } from 'expo-router';
 interface Props {
   navigation: NavigationProp<any>;
 }

@@ -6,7 +6,6 @@ import { AntDesign } from '@expo/vector-icons';
 interface Props {
   navigation: NavigationProp<any>;
 }
-import { createContext, useContext, useState, useEffect } from "react";
 export default function Index({ navigation }: Props) {
   return (
     <View style={styles.container}> 
@@ -16,15 +15,13 @@ export default function Index({ navigation }: Props) {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('signIn')}
-      >
+        onPress={() => navigation.navigate("tabs")}>
         <Text style={styles.buttonText}>Get Started</Text>
         <AntDesign name="arrowright" size={20} color="white" style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

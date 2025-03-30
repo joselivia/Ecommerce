@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { SignOut } from '@/lib/config';
 interface Props {
     navigation: NavigationProp<any>;
 }
-
-
 export default function AccountScreen ({navigation}: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
     setModalVisible(false);
-//logic for logout
+try{
+await SignOut();
+navigation.navigate("signIn");
+}catch(error:any){
+  console.log(error);
+}
   };
   return (
     <View style={styles.container}>
-
       <View style={styles.header}>
              <TouchableOpacity onPress={() => navigation.goBack()}>
                <Ionicons name="arrow-back-outline" size={24} color="black" />
@@ -41,14 +44,7 @@ export default function AccountScreen ({navigation}: Props) {
         </View>
         <Ionicons name="chevron-forward" size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("MyOrder")}>
-        <View style={styles.cardContent}>
-          <Ionicons name="bookmarks-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.cardText}>Address Book</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={24} color="black" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("PaymentMethod")}>
+       <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("PaymentMethod")}>
         <View style={styles.cardContent}>
           <Ionicons name="card-outline" size={24} color="black" style={styles.icon} />
           <Text style={styles.cardText}>Payment Methods</Text>
@@ -62,14 +58,7 @@ export default function AccountScreen ({navigation}: Props) {
         </View>
         <Ionicons name="chevron-forward" size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card}>
-        <View style={styles.cardContent}>
-          <Ionicons name="help-circle-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.cardText}>FAQs</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={24} color="black" />
-      </TouchableOpacity>
-
+ 
       <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("HelpCenter")}>
         <View style={styles.cardContent}>
           <Ionicons name="help-circle-outline" size={24} color="black" style={styles.icon} />

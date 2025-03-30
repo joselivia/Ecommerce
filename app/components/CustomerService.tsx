@@ -36,7 +36,7 @@ export default function CustomerServiceScreen(){
           style={styles.input} 
           placeholder="Write your message..." 
           multiline 
-          onChangeText={(text) => {}} // Handle text input here 
+          onChangeText={(text) => {}} 
         /> 
         <TouchableOpacity style={styles.sendButton}> 
           <Ionicons name="send" size={24} color="black" /> 

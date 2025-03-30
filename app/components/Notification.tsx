@@ -7,8 +7,7 @@ export default function NotificationScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
       <ScrollView>
-
-        <Text style={styles.sectionTitle}>Today</Text>
+      <Text style={styles.sectionTitle}>Today</Text>
         <View style={styles.notificationItem}>
           <FontAwesome5 name="percent" size={24} color="#ff6f00" />
           <View style={styles.notificationText}>

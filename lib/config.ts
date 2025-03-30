@@ -1,8 +1,6 @@
 import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
-
-
 export const appwriteConfig = {
-    endpoint: "https://cloud.appwrite.io/v1",
+  endpoint: "https://cloud.appwrite.io/v1",
   projectId: "67e14174000f4325195b",
   Platform: "com.joselivia.lekovet",
   databaseId: "67e14c27000a669e1017",
@@ -27,17 +25,12 @@ export const createUser = async (
   username: string,
   phone: string,
   password: string
-) => {
-    
+) => {     
   try {
-
-    const newAccount = await account.create(ID.unique(), email, password);
+    const newAccount = await account.create(ID.unique(), email, password, username);
     if (!newAccount) throw new Error("Account creation failed");
- 
-    const session = await SignIn(email, password);
-    if(!session) throw new Error("Sign-In failed after account creation");
-
     const avatarUrl = avatars.getInitials(username);
+await signIn(email, password);
     const newUser = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
@@ -50,7 +43,6 @@ export const createUser = async (
         avatar: avatarUrl,
       }
     );
-
     return newUser;
   } catch (error: any) {
     console.log(error);
@@ -58,7 +50,7 @@ export const createUser = async (
   }
 };
 
-export const SignIn=async(email: string, password: string) =>{
+export async function signIn(email: string, password: string){
   try {
     await account.deleteSessions();
     const session = await account.createEmailPasswordSession(email, password);
@@ -71,6 +63,8 @@ export const SignIn=async(email: string, password: string) =>{
 
 export async function SignOut() {
   try {
+    await account.deleteSessions();
+    return true;
   } catch (error: any) {
     console.log(error);
     throw new Error(error);
@@ -91,9 +85,7 @@ const currentUser=await databases.listDocuments(
 if (!currentUser || currentUser.documents.length === 0) {
     throw new Error("User not found");
   }
-
   const userData = currentUser.documents[0];
-
   return {
     accountId: userData.accountId,
     email: userData.email,

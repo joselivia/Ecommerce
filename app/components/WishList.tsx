@@ -1,15 +1,22 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import SavedBoardsScreen from './Board';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import ItemWishScreen from './ItemWish';
 interface Props {
   navigation: NavigationProp<any>;
+  route: RouteProp<any>;
+}
+interface BoardParams {
+  key: string;
+  name: string;
+  wishlist: any[];
 }
 export default function WishListScreen({navigation}:Props) {
     const [activePage, setActivePage] = useState(0);
+    const wishlist:any[]=[]
   const pagerRef = useRef<PagerView>(null);
   const handlePageChange = (pageIndex: number) => {
     setActivePage(pageIndex);
@@ -22,7 +29,7 @@ export default function WishListScreen({navigation}:Props) {
             <Ionicons name="arrow-back-outline" size={24} color="black" />
           </TouchableOpacity>
         <Text style={styles.headerTitle}>WishList</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("notification")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
                      <Ionicons name="cart-outline" size={24} color="black" />
                    </TouchableOpacity>
       </View>
@@ -42,14 +49,16 @@ export default function WishListScreen({navigation}:Props) {
           <Text>Board</Text>
            </TouchableOpacity> 
       </View>
+
       <PagerView style={styles.pagerView} initialPage={0} ref={pagerRef} onPageSelected={(e) => setActivePage(e.nativeEvent.position)}>
         <View key="1" style={styles.page}>          
        <ItemWishScreen/>
         </View>
         <View key="2" style={styles.page}>
-               <SavedBoardsScreen/>
-
-        </View>
+               <SavedBoardsScreen navigation={navigation} route={{   key: "SavedBoardsScreen",
+        name: "wishlist",
+        params: { wishlist }}}/>
+                       </View>
       </PagerView>
     </View>
   );

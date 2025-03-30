@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
-import { SignIn } from "@/lib/config";
+import { signIn } from "@/lib/config";
 interface Props {
   navigation: NavigationProp<any>;
 }
@@ -25,7 +25,7 @@ export default function SignInScreen({ navigation }: Props) {
      }
     setIsSubmitting(true);
     try {
-       await SignIn(email, password);
+       await signIn(email, password);
       Toast.show({ type: "success", text1: "Login successful" });
       navigation.navigate("tabs");
     } catch (error: any) {
@@ -39,7 +39,8 @@ export default function SignInScreen({ navigation }: Props) {
   }}
   return (
     <View style={styles.container}>
-          <TouchableOpacity style={styles.socialButton}>
+      <View style={styles.socialButtons}>  
+    <TouchableOpacity style={styles.socialButton}>
         <Ionicons name="logo-google" size={20} />
         <Text style={styles.socialButtonText}>Continue With Google</Text>
       </TouchableOpacity>
@@ -48,7 +49,7 @@ export default function SignInScreen({ navigation }: Props) {
         <Ionicons name="logo-twitter" size={20} color="#1500af" />
         <Text style={styles.socialButtonText}>Continue With Twitter</Text>
       </TouchableOpacity>
-
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Enter your username or email address"
@@ -98,6 +99,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
+  socialButtons:{
+borderWidth: 1,
+borderColor: '#a69aff',
+borderRadius: 11,
+boxShadow: "0 0 10px rgb(185, 244, 195)",
+marginBottom: 15
+},
   socialButton: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [selectedTab, setSelectedTab] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false); 
-
+  const [wishlist, setWishlist] = useState<any[]>([]);
   const allProducts = [
     { id: "1", image: require("../../assets/images/icon.png"), name: "T-Shirt", price: "$20", discountPrice: "$15", category: "T-Shirts" },
     { id: "2", image: require("../../assets/images/R.jpeg"), name: "Jeans", price: "$40", discountPrice: "$30", category: "Jeans" },
@@ -31,6 +31,17 @@ export default function HomeScreen({ navigation }: Props) {
     { id: "7", image: require("../../assets/images/R.jpeg"), name: "Jacket", price: "$100", discountPrice: "$80", category: "Jackets" },
   ];
 
+const toggleWishlist=(item:any)=>{
+  setWishlist((prevWishlist) => {
+    const updatedWishlist = prevWishlist.some((wishlistItem)=>wishlistItem.id===item.id)
+      ? prevWishlist.filter((wishlistItem) => wishlistItem.id !== item.id)
+      : [...prevWishlist, item];
+    return updatedWishlist;
+  })
+}
+useEffect(() => {
+  navigation.navigate("wishlist", { wishlist: wishlist });
+}, [wishlist]);
   const filteredProducts = allProducts.filter((product) => {
     const matchesCategory = selectedTab === "All" || product.category === selectedTab;
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -61,7 +72,7 @@ export default function HomeScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.navigate("notification")}>
           <Ionicons name="notifications" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("wishlist")}>
+        <TouchableOpacity onPress={() => navigation.navigate("wishlist", { wishlist })}>
           <Ionicons name="heart" size={24} color="black" />
         </TouchableOpacity>
         </View>
@@ -101,11 +112,11 @@ export default function HomeScreen({ navigation }: Props) {
         numColumns={2}
         contentContainerStyle={styles.productGrid}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+           <View style={styles.card}>
             <TouchableOpacity onPress={() => navigation.navigate("ProductDetail", { product: item })}>
               <Image source={item.image} style={styles.productImage} />
-              <TouchableOpacity style={styles.likeIcon}>
-                <Ionicons name="heart-outline" size={20} color="#8000FF" />
+              <TouchableOpacity style={styles.likeIcon} onPress={() => toggleWishlist(item)}>
+                <Ionicons name={wishlist.some((wishlistItem) => wishlistItem.id === item.id) ? "heart" : "heart-outline"} size={20} color="#8000FF" />
               </TouchableOpacity>
               <Text style={styles.productName}>{item.name}</Text>
               <View style={styles.priceContainer}>
