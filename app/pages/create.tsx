@@ -92,7 +92,6 @@ export default function CreateProductScreen() {
           description,
           images: uploadedImages,
           users: currentUser.accountId,
-
         }
 
       );

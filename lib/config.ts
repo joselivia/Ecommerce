@@ -29,8 +29,7 @@ export const createUser = async (
   try {
     const newAccount = await account.create(ID.unique(), email, password, username);
     if (!newAccount) throw new Error("❌ Account creation failed");
-    
-    await new Promise((resolve) => setTimeout(resolve, 2000)); 
+        await new Promise((resolve) => setTimeout(resolve, 2000)); 
     const session = await account.createEmailPasswordSession(email, password);
     const authenticatedUser = await account.get(); 
     const avatarUrl = avatars.getInitials(username);
@@ -54,7 +53,12 @@ export const createUser = async (
 
 export async function signIn(email: string, password: string){
   try {
-    await account.deleteSession("current");
+    try {
+      await account.get();
+      await account.deleteSession("current");
+    } catch (e) {
+      console.log("No active session to delete, proceeding...");
+    }
      const session = await account.createEmailPasswordSession(email, password);
     if (!session) {
       throw new Error("Login session was not created.");
@@ -69,7 +73,6 @@ export async function signIn(email: string, password: string){
 
 export async function SignOut() {
   try {
- 
     return true;
   } catch (error: any) {
 

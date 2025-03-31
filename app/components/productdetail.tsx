@@ -9,8 +9,11 @@ import {
   FlatList,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCart } from "./CartContext"; 
+import Toast from "react-native-toast-message"; 
 
 interface Product {
+  $id: string; 
   name: string;
   images: string | string[];
   price: number;
@@ -26,13 +29,36 @@ type Props = NativeStackScreenProps<RootStackParamList, "ProductDetail">;
 
 export default function ProductDetailScreen({ route }: Props) {
   const { product } = route.params;
+  const { addToCart } = useCart(); 
+  const flatListRef = useRef<FlatList>(null);
+
   const images = Array.isArray(product.images)
     ? product.images
     : product.images.includes(",")
     ? product.images.split(",")
     : [product.images];
 
-  const flatListRef = useRef<FlatList>(null);
+  const handleAddToCart = () => {
+    const imageUrl = Array.isArray(product.images)
+      ? product.images[0]
+      : product.images; 
+
+    const cartItem = {
+      id: product.$id, 
+      title: product.name,
+      size: "M", 
+      price: product.price,
+      quantity: 1, 
+      image: imageUrl,
+    };
+
+    addToCart(cartItem); 
+    Toast.show({
+      type: "success",
+      text1: "Added to Cart",
+      text2: `${product.name} has been added to your cart!`,
+    });
+  };
 
   return (
     <View style={styles.detailsContainer}>
@@ -56,7 +82,7 @@ export default function ProductDetailScreen({ route }: Props) {
         <Text style={styles.price}>$ {product.price}</Text>
       </View>
       <Text style={styles.productDescription}>{product.description}</Text>
-      <TouchableOpacity style={styles.addToCartButton}>
+      <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
         <Text style={styles.addToCartButtonText}>Add to Cart</Text>
       </TouchableOpacity>
     </View>

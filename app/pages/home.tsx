@@ -12,13 +12,14 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import FilterPopup from "../components/filterpop";
-import { getAllProducts} from "@/lib/config";
+import { getAllProducts } from "@/lib/config";
 import useAppwriting from "../../lib/UseAppwrite";
+import { useCart } from "../components/CartContext"; 
 
 interface Product {
   $id: string;
   name: string;
-  images: string;
+  images: string | string[];
   price: number;
 }
 
@@ -31,8 +32,9 @@ export default function HomeScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [wishlist, setWishlist] = useState<Product[]>([]);
+  const { cart, addToCart } = useCart(); // Use context
   const [refreshing, setRefreshing] = useState(false);
-    const { data: products = [] ,refetch} = useAppwriting(getAllProducts);
+  const { data: products = [], refetch } = useAppwriting(getAllProducts);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -41,59 +43,97 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const toggleWishlist = (item: Product) => {
-    setWishlist((prevWishlist) => {
-      return prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
+    setWishlist((prevWishlist) =>
+      prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
         ? prevWishlist.filter((wishlistItem) => wishlistItem.$id !== item.$id)
-        : [...prevWishlist, item];
-        
-    });
+        : [...prevWishlist, item]
+    );
+  };
+
+  const handleAddToCart = (item: Product) => {
+    const imageUrl =
+      Array.isArray(item.images) && item.images.length > 0
+        ? item.images[0]
+        : typeof item.images === "string"
+        ? item.images
+        : "https://via.placeholder.com/100";
+    const newCartItem = {
+      id: item.$id || "unknown-id",
+      title: item.name || "Unnamed Product",
+      size: "M",
+      price: item.price || 0,
+      image: imageUrl,
+      quantity: 1, // Quantity is managed by addToCart
+    };
+
+    addToCart(newCartItem); // Use context method
+    console.log("Added to cart, current cart:", cart);
+    navigation.navigate("Cart");
   };
 
   const filteredProducts: Product[] = products.filter((product: Product) => {
     const productName = product.name ? product.name.toLowerCase().trim() : "";
     const selectedCategory = selectedTab.toLowerCase().trim();
-      const matchesCategory =
+    const matchesCategory =
       selectedTab === "All" || productName.includes(selectedCategory);
-      const matchesSearch = productName.includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+    const matchesSearch = productName.includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
-    const renderProductCard = ({ item }: { item: Product }) => {
-    const imageUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+
+  const renderProductCard = ({ item }: { item: Product }) => {
+    const imageUrl =
+      Array.isArray(item.images) && item.images.length > 0
+        ? item.images[0]
+        : typeof item.images === "string"
+        ? item.images
+        : "https://via.placeholder.com/100";
     return (
       <View style={styles.card}>
-        <TouchableOpacity onPress={() => navigation.navigate("ProductDetail", { product: item })}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ProductDetail", { product: item })}
+        >
           <Image source={{ uri: imageUrl }} style={styles.productImage} />
           <TouchableOpacity style={styles.likeIcon} onPress={() => toggleWishlist(item)}>
             <Ionicons
-              name={wishlist.some((wishlistItem) => wishlistItem.$id === item.$id) ? "heart" : "heart-outline"}
+              name={
+                wishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
+                  ? "heart"
+                  : "heart-outline"
+              }
               size={20}
               color="#8000FF"
             />
           </TouchableOpacity>
-          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productName}>{item.name || "Unnamed Product"}</Text>
           <View style={styles.priceContainer}>
-            <Text style={styles.originalPrice}>$ {item.price}</Text>
+            <Text style={styles.originalPrice}>$ {item.price || 0}</Text>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={() => handleAddToCart(item)}
+            >
+              <Ionicons name="cart" size={24} color="green" />
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </View>
     );
   };
-  
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.discoveryText}>Discovery</Text>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("notification")}> 
+          <TouchableOpacity onPress={() => navigation.navigate("notification")}>
             <Ionicons name="notifications" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("wishlist", { wishlist })}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("wishlist", { wishlist })}
+          >
             <Ionicons name="heart" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
-
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Ionicons name="search-outline" size={20} color="#777" />
@@ -104,8 +144,11 @@ export default function HomeScreen({ navigation }: Props) {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-            </View>
-        <TouchableOpacity style={styles.filterIcon} onPress={() => setIsFilterVisible(true)}>
+        </View>
+        <TouchableOpacity
+          style={styles.filterIcon}
+          onPress={() => setIsFilterVisible(true)}
+        >
           <MaterialIcons name="filter-list" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -117,7 +160,11 @@ export default function HomeScreen({ navigation }: Props) {
             style={[styles.tab, selectedTab === tab && styles.activeTab]}
             onPress={() => setSelectedTab(tab)}
           >
-            <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText]}>{tab}</Text>
+            <Text
+              style={[styles.tabText, selectedTab === tab && styles.activeTabText]}
+            >
+              {tab}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -125,24 +172,25 @@ export default function HomeScreen({ navigation }: Props) {
         data={filteredProducts}
         numColumns={2}
         contentContainerStyle={styles.productGrid}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         renderItem={renderProductCard}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.$id || Math.random().toString()}
       />
-      
       {isFilterVisible && <FilterPopup onClose={() => setIsFilterVisible(false)} />}
     </View>
   );
 }
 
-
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  header: { 
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -153,9 +201,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
   },
-  iconContainer:{
-flexDirection:"row",
-gap:10,
+  iconContainer: {
+    flexDirection: "row",
+    gap: 10,
   },
   searchContainer: {
     flexDirection: "row",
@@ -207,7 +255,7 @@ gap:10,
   },
   productGrid: {
     justifyContent: "center",
-    alignItems: "center", 
+    alignItems: "center",
     paddingBottom: 10,
   },
   card: {
@@ -215,13 +263,17 @@ gap:10,
     minWidth: 150,
     backgroundColor: "#fff",
     borderRadius: 10,
-marginVertical:5,
+    marginVertical: 5,
     marginBottom: 10,
     marginRight: 10,
     overflow: "hidden",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
+  },
+  addToCartButton: {
+    borderRadius: 10,
+    alignItems: "center",
   },
   productImage: {
     width: "100%",
@@ -239,22 +291,18 @@ marginVertical:5,
   productName: {
     fontSize: 16,
     fontWeight: "bold",
-    margin: 10,
+    marginLeft: 10,
     color: "black",
   },
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginLeft: 10,
-    marginBottom: 10,
   },
   originalPrice: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#8000FF",
-    marginRight: 5,
-   },
-
+  },
 });
-
-
