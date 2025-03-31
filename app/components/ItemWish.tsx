@@ -43,7 +43,6 @@ export default function ItemWishScreen () {
   };
 
   const handleAddToCart = (id: string) => {
-    console.log(`Item with ID: ${id} added to cart`);
   };
 
   return (

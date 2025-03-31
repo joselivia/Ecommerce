@@ -33,8 +33,7 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     if (wishlistItems.length > 0 && boards.length === 0) {
-      console.log("Auto-creating default board with wishlist items");
-      const defaultBoard: Board = {
+        const defaultBoard: Board = {
         id: "default-" + Math.random().toString(),
         title: "Default Wishlist",
         items: wishlistItems,
@@ -46,7 +45,6 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     if (wishlistItems.length > 0 && boards.length > 0 && selectedBoard) {
-      console.log("useEffect triggered: Adding wishlist items to selected board");
       setBoards((prevBoards) =>
         prevBoards.map((board) =>
           board.id === selectedBoard
@@ -64,7 +62,6 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
         title: newBoardName,
         items: wishlistItems.length > 0 ? wishlistItems : [],
       };
-      console.log("Creating new board:", newBoard);
       setBoards([...boards, newBoard]);
       setNewBoardName("");
       setModalVisible(false);
@@ -76,7 +73,6 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
 
   const addToBoard = (boardId: string) => {
     if (wishlistItems.length > 0) {
-      console.log("Adding to board:", boardId);
       setBoards((prevBoards) =>
         prevBoards.map((board) =>
           board.id === boardId
@@ -135,8 +131,7 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
       <TouchableOpacity
         style={styles.createBoardButton}
         onPress={() => {
-          console.log("Create board button pressed");
-          setModalVisible(true);
+                setModalVisible(true);
         }}
       >
         <Icon name="plus" size={24} color="black" />

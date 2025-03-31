@@ -139,11 +139,9 @@ export default function HomeScreen({ navigation }: Props) {
             <Ionicons name="notifications" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>{
-     
-             
+            onPress={() =>             
               navigation.navigate("wishlist", { wishlist })
-              console.log("Navigating to wishlist with:", wishlist);}}
+              }
           >
             <Ionicons name="heart" size={24} color="black" />
           </TouchableOpacity>
