@@ -15,6 +15,7 @@ import FilterPopup from "../components/filterpop";
 import { getAllProducts } from "@/lib/config";
 import useAppwriting from "../../lib/UseAppwrite";
 import { useCart } from "../components/CartContext"; 
+import Toast from "react-native-toast-message";
 
 interface Product {
   $id: string;
@@ -32,7 +33,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [wishlist, setWishlist] = useState<Product[]>([]);
-  const { cart, addToCart } = useCart(); // Use context
+  const { cart, addToCart } = useCart(); 
   const [refreshing, setRefreshing] = useState(false);
   const { data: products = [], refetch } = useAppwriting(getAllProducts);
 
@@ -43,13 +44,25 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const toggleWishlist = (item: Product) => {
-    setWishlist((prevWishlist) =>
-      prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
-        ? prevWishlist.filter((wishlistItem) => wishlistItem.$id !== item.$id)
-        : [...prevWishlist, item]
-    );
+    setWishlist((prevWishlist) => {
+      const isInWishlist = prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id);
+      if (isInWishlist) {
+        Toast.show({
+          type: "info",
+          text1: "Removed from Wishlist",
+          text2: `${item.name} removed from your wishlist`,
+        });
+        return prevWishlist.filter((wishlistItem) => wishlistItem.$id !== item.$id);
+      } else {
+        Toast.show({
+          type: "success",
+          text1: "Added to Wishlist",
+          text2: `${item.name} added to your wishlist`,
+        });
+        return [...prevWishlist, item];
+      }
+    });
   };
-
   const handleAddToCart = (item: Product) => {
     const imageUrl =
       Array.isArray(item.images) && item.images.length > 0
@@ -65,7 +78,6 @@ export default function HomeScreen({ navigation }: Props) {
       image: imageUrl,
       quantity: 1, 
     };
-
     addToCart(newCartItem); 
     navigation.navigate("Cart");
   };
@@ -127,7 +139,11 @@ export default function HomeScreen({ navigation }: Props) {
             <Ionicons name="notifications" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("wishlist", { wishlist })}
+            onPress={() =>{
+     
+             
+              navigation.navigate("wishlist", { wishlist })
+              console.log("Navigating to wishlist with:", wishlist);}}
           >
             <Ionicons name="heart" size={24} color="black" />
           </TouchableOpacity>

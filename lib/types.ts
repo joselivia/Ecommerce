@@ -15,7 +15,7 @@ export type RootStackParamList = {
   AddCard: undefined;
   Mydetail: undefined;
   userinfo: undefined;
-  wishlist: undefined;
+  wishlist: { wishlist: Product[] };
   Cart: undefined;
 };
 

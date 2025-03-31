@@ -10,7 +10,7 @@ import {
   Modal,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, Product } from "../../lib/types";
+import { RootStackParamList} from "../../lib/types";
 import { useCart } from "../components/CartContext";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons"; 

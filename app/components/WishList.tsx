@@ -1,64 +1,64 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import PagerView from 'react-native-pager-view';
-import SavedBoardsScreen from './Board';
-import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
-import ItemWishScreen from './ItemWish';
+import React, { useRef, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import PagerView from "react-native-pager-view";
+import SavedBoardsScreen from "./Board"; 
+import { Ionicons } from "@expo/vector-icons";
+import { NavigationProp, RouteProp } from "@react-navigation/native";
+import ItemWishScreen from "./ItemWish"; 
+import { RootStackParamList } from "../../lib/types"; 
+
 interface Props {
-  navigation: NavigationProp<any>;
-  route: RouteProp<any>;
+  navigation: NavigationProp<RootStackParamList, "wishlist">;
+  route: RouteProp<RootStackParamList, "wishlist">;
 }
-interface BoardParams {
-  key: string;
-  name: string;
-  wishlist: any[];
-}
-export default function WishListScreen({navigation}:Props) {
-    const [activePage, setActivePage] = useState(0);
-    const wishlist:any[]=[]
+
+export default function WishListScreen({ navigation, route }: Props) {
+  const [activePage, setActivePage] = useState(0);
   const pagerRef = useRef<PagerView>(null);
+
   const handlePageChange = (pageIndex: number) => {
     setActivePage(pageIndex);
     pagerRef.current?.setPage(pageIndex);
   };
+
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
-   <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back-outline" size={24} color="black" />
-          </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>WishList</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-                     <Ionicons name="cart-outline" size={24} color="black" />
-                   </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+          <Ionicons name="cart-outline" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       <View style={styles.button}>
         <TouchableOpacity
-          key={"1"}
           style={[styles.btn, activePage === 0 && styles.activeBtn]}
-          onPress={() => handlePageChange(0)} 
+          onPress={() => handlePageChange(0)}
         >
-          <Text >Items</Text>
+          <Text>Items</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          key={"2"}
           style={[styles.btn, activePage === 1 && styles.activeBtn]}
-          onPress={() => handlePageChange(1)} 
+          onPress={() => handlePageChange(1)}
         >
           <Text>Board</Text>
-           </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
 
-      <PagerView style={styles.pagerView} initialPage={0} ref={pagerRef} onPageSelected={(e) => setActivePage(e.nativeEvent.position)}>
-        <View key="1" style={styles.page}>          
-       <ItemWishScreen/>
+      <PagerView
+        style={styles.pagerView}
+        initialPage={0}
+        ref={pagerRef}
+        onPageSelected={(e) => setActivePage(e.nativeEvent.position)}
+      >
+        <View key="1" style={styles.page}>
+          <ItemWishScreen /> 
         </View>
         <View key="2" style={styles.page}>
-               <SavedBoardsScreen navigation={navigation} route={{   key: "SavedBoardsScreen",
-        name: "wishlist",
-        params: { wishlist }}}/>
-                       </View>
+          <SavedBoardsScreen navigation={navigation} route={route} />
+        </View>
       </PagerView>
     </View>
   );
@@ -66,47 +66,40 @@ export default function WishListScreen({navigation}:Props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f4f4f4',
-  },
+    flex: 1,},
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 2,
-    padding:10,
+    padding: 10,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
-padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
   btn: {
     padding: 5,
-     borderRadius: 5,
+    borderRadius: 5,
     width: 100,
-    alignItems: 'center',
+    alignItems: "center",
   },
   activeBtn: {
-    borderBottomWidth: 2, 
-  borderBottomColor: 'black', 
-  paddingBottom: 2,
+    borderBottomWidth: 2,
+    borderBottomColor: "black",
+    paddingBottom: 2,
   },
   pagerView: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   page: {
     padding: 10,
-    backgroundColor: '#fff',
-  },
-  pageText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    backgroundColor: "#fff",
   },
 });
