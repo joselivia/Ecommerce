@@ -90,16 +90,9 @@ const CartScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Cart</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("notification")}>
-          <Ionicons name="notifications-outline" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
+         <View style={styles.header}>
+              <Text style={styles.title}>Cart</Text>
+            </View>
       {cart.length === 0 ? (
         <Text style={styles.emptyText}>Your cart is empty</Text>
       ) : (
@@ -148,16 +141,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  header: { flexDirection: 'row', justifyContent: 'center', marginBottom: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', color: 'black' },
   emptyText: {
     textAlign: "center",
     fontSize: 16,

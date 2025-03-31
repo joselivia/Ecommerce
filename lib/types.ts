@@ -1,0 +1,37 @@
+import { NavigatorScreenParams } from "@react-navigation/native";
+export type RootStackParamList = {
+  index: undefined;
+  tabs: undefined; 
+  signIn: undefined;
+  signUp: undefined;
+  notification: undefined;
+  resetPassword: undefined;
+  Resetverification: undefined;
+  ProductDetail: { product: Product };
+  Customerservice: undefined;
+  MyOrder: undefined;
+  HelpCenter: undefined;
+  PaymentMethod: undefined;
+  AddCard: undefined;
+  Mydetail: undefined;
+  userinfo: undefined;
+  wishlist: undefined;
+  Cart: undefined;
+};
+
+export interface Product {
+  $id: string;
+  name: string;
+  images: string | string[];
+  price: number;
+  description: string;
+  location: string;
+}
+
+export type TabParamList = {
+  Home: undefined;
+  Wallet: undefined;
+  Create: undefined;
+  Cart: undefined;
+  Account: undefined;
+};

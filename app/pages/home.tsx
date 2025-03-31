@@ -63,11 +63,10 @@ export default function HomeScreen({ navigation }: Props) {
       size: "M",
       price: item.price || 0,
       image: imageUrl,
-      quantity: 1, // Quantity is managed by addToCart
+      quantity: 1, 
     };
 
-    addToCart(newCartItem); // Use context method
-    console.log("Added to cart, current cart:", cart);
+    addToCart(newCartItem); 
     navigation.navigate("Cart");
   };
 

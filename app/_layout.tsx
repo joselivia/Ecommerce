@@ -1,10 +1,10 @@
-// RootLayout.tsx
 import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../lib/types"; 
 import Index from "./index";
 import SignInScreen from "./Auth/SignInScreen";
 import SignUpScreen from "./Auth/SignUpScreen";
-import TabLayout from "./tabs/tabs"; // Your tab navigator
+import TabLayout from "./tabs/tabs";
 import NotificationScreen from "./components/Notification";
 import CustomerServiceScreen from "./components/CustomerService";
 import MyOrdersScreen from "./orders/Myorder";
@@ -17,21 +17,16 @@ import ProductDetailScreen from "./components/productdetail";
 import Toast from "react-native-toast-message";
 import ResetPassScreen from "./Auth/Resetpass";
 import VerificationScreen from "./Auth/Resetverification";
-import CartScreen from "./pages/Cart";
-import { CartProvider } from "./components/CartContext"; // Adjust path
+import { CartProvider } from "./components/CartContext";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
   return (
     <CartProvider>
       <Stack.Navigator initialRouteName="index">
         <Stack.Screen name="index" component={Index} options={{ headerShown: false }} />
-        <Stack.Screen
-          name="tabs"
-          component={TabLayout}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="tabs" component={TabLayout} options={{ headerShown: false }} />
         <Stack.Screen
           name="signIn"
           component={SignInScreen}
@@ -100,11 +95,6 @@ export default function RootLayout() {
         <Stack.Screen
           name="wishlist"
           component={WishListScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Cart"
-          component={CartScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
