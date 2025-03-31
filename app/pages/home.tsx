@@ -33,14 +33,13 @@ export default function HomeScreen({ navigation }: Props) {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [refreshing, setRefreshing] = useState(false);
     const { data: products = [] ,refetch} = useAppwriting(getAllProducts);
-  // Pull to Refresh
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
   };
 
-  // Wishlist Toggle
   const toggleWishlist = (item: Product) => {
     setWishlist((prevWishlist) => {
       return prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
@@ -58,10 +57,7 @@ export default function HomeScreen({ navigation }: Props) {
       const matchesSearch = productName.includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
   });
-  
-  
-
-  const renderProductCard = ({ item }: { item: Product }) => {
+    const renderProductCard = ({ item }: { item: Product }) => {
     const imageUrl = Array.isArray(item.images) ? item.images[0] : item.images;
     return (
       <View style={styles.card}>

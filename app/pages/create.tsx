@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity,  FlatList, 
 import * as ImagePicker from 'expo-image-picker';
 import { ID } from 'react-native-appwrite';
 import { appwriteConfig, databases, storage } from '../../lib/config'; 
+import Toast from 'react-native-toast-message';
 
 export default function CreateProductScreen() {
   const [productName, setProductName] = useState('');
@@ -50,11 +51,11 @@ const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async () => {
     if (!productName || !price || !description||!location || images.length === 0) {
       alert('Please fill in all fields and select images.');
-      return;
+            return;
     }
     setIsSubmitting(true);
     try {
-      console.log("📤 Uploading images...");
+  
       const uploadedImages = await uploadImages();
       if (uploadedImages.length === 0)
         throw new Error("No images uploaded.");
@@ -69,18 +70,17 @@ const [isSubmitting, setIsSubmitting] = useState(false);
           price: parseFloat(price),
           location:location,
           description: description,
-          images:JSON.stringify(uploadedImages),
+          images:uploadedImages,
         }
       );
-      console.log("✅ Product created successfully:", newProduct);
-      alert('Product uploaded successfully!');
+     Toast.show({ type: "success", text1: "Product uploaded successful" });
       setProductName('');
       setPrice('');
+      setLocation('');
       setDescription('');
       setImages([]);
       } catch (error:any) {
-        console.error("❌ Error uploading product:", error.message || error);
-        alert("Failed to upload product. Please try again.");
+          alert("Failed to upload product. Please try again.");
     }
     finally{
       setIsSubmitting(false)

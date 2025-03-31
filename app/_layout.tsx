@@ -17,11 +17,11 @@ import Toast from "react-native-toast-message";
 import ResetPassScreen from "./Auth/Resetpass";
 import VerificationScreen from "./Auth/Resetverification";
 import CartScreen from "./pages/Cart";
+import { View } from "react-native";
 const Stack = createNativeStackNavigator();
 
 export default function RootLayout() {
-   return (
-    <>
+   return (    <>
     <Stack.Navigator initialRouteName= "index">
    <Stack.Screen name="tabs" component={TabLayout} options={{ headerShown: false }} />
    <Stack.Screen name="index" component={Index} options={{ headerShown: false }} />
@@ -31,7 +31,7 @@ export default function RootLayout() {
       <Stack.Screen name="resetPassword" component={ResetPassScreen} options={{ title: "Reset Password", headerTitleAlign: "center" }} />
       <Stack.Screen name="Resetverification" component={VerificationScreen} options={{ title: "Verification", headerTitleAlign: "center" }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{title:"Product Details", headerTitleAlign:"center" }} />
-      <Stack.Screen name="Customerservice" component={CustomerServiceScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="Customerservice" component={CustomerServiceScreen} options={{ headerShown: false }} />
       <Stack.Screen name="MyOrder" component={MyOrdersScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ title: "Help Center", headerTitleAlign: "center"}} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} options={{ headerShown: false }} />
