@@ -110,7 +110,7 @@ const CartScreen=({navigation}:Props) => {
       </View>
 
       <TouchableOpacity style={styles.checkoutButton} onPress={() => navigation.navigate("Checkout")}>
-        <Text style={styles.checkoutButtonText}>Go To Checkout</Text>
+        <Text style={styles.checkoutButtonText}>make Order</Text>
         <AntDesign name="arrowright" size={20} color="white" style={styles.icon} />
       </TouchableOpacity>
     </View>

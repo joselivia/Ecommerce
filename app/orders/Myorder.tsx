@@ -39,12 +39,7 @@ export default function MyOrdersScreen({ navigation }: Props) {
         <Text style={styles.orderPrice}>{item.price}</Text> 
         <View style={styles.stausbtn}> 
         <Text style={styles.orderStatus}>{item.status}</Text> 
-       
-            <TouchableOpacity style={styles.trackButton} onPress={() => navigation.navigate("TrackOrder")}>
-              <Text style={styles.trackButtonText}>Track Order</Text>
-            </TouchableOpacity>
-        
-        </View> 
+               </View> 
       </View> 
     </View> 
   ); 
@@ -60,22 +55,6 @@ export default function MyOrdersScreen({ navigation }: Props) {
           <Ionicons name="notifications-outline" size={24} color="black" /> 
         </TouchableOpacity> 
       </View> 
-      <View style={styles.tabs}> 
-        <TouchableOpacity 
-          style={[styles.tab, isOngoing && styles.activeTab]} 
-          onPress={() => setIsOngoing(true)} 
-        > 
-          <Text style={[styles.tabText, isOngoing && styles.activeTabText]}>Ongoing</Text> 
-        </TouchableOpacity> 
-        
-        <TouchableOpacity 
-          style={[styles.tab, !isOngoing && styles.activeTab]} 
-          onPress={() =>navigation.navigate('Orderstatus')} 
-        > 
-          <Text style={[styles.tabText, !isOngoing && styles.activeTabText]}>Completed</Text> 
-        </TouchableOpacity> 
-      </View> 
- 
       <FlatList data={isOngoing ? ongoingOrders : completedOrders} keyExtractor={item => item.id} renderItem={renderItem} />
     
     </View> 
@@ -99,29 +78,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     color: "black", 
   }, 
-  tabs: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginBottom: 20, 
-  }, 
-  tab: { 
-    paddingVertical: 10, 
-    paddingHorizontal: 20, 
-    borderBottomWidth: 2, 
-    borderColor: '#ddd', 
-  }, 
-  activeTab: { 
-    borderColor:'#6C5B7B', 
-  }, 
-  tabText: { 
-    fontSize: 16, 
-    color: '#777', 
-  }, 
-  activeTabText: { 
-    color: '#6C5B7B', 
-    fontWeight: 'bold', 
-  }, 
-  orderItem: { 
+   orderItem: { 
     flexDirection: 'row', 
     marginBottom: 20, 
     borderBottomWidth: 1, 
@@ -164,15 +121,5 @@ top:0,
     color: '#777', 
   marginBottom: 5, 
     textAlign: 'right', 
-  }, 
-  trackButton: { 
-    backgroundColor: '#6C5B7B', 
-      borderRadius: 5, 
-           padding: 5, 
-    }, 
-  trackButtonText: { 
-    color: '#fff', 
-    fontSize: 14, 
-    textAlign:'center', 
   }, 
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { createUser } from '@/lib/config';
+import { createUser} from '@/lib/config';
 import Toast from "react-native-toast-message";
 interface Props {
   navigation: NavigationProp<any>;
@@ -10,21 +10,22 @@ interface Props {
 export default function SignUpScreen({navigation}: Props) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const submit=async()=>{
-      if(!email || !username || !password || !phone) {
+      if(!email || !username || !password ) {
         Toast.show({
           type: "error",
           text1: "Please fill all the fields",
-        });
-        return;
+        });return;
+  
       }
-       setIsSubmitting(true);
+        setIsSubmitting(true);
     try{  
-    await createUser(email,username,phone,password);
+      
+      const newUser = await createUser(email,password,username);
       Toast.show({ type: "success", text1: "Account created successfully" });
  navigation.navigate("signIn");
     }catch(error:any){
@@ -56,17 +57,9 @@ export default function SignUpScreen({navigation}: Props) {
         style={styles.input}
         placeholder="Enter your email address"
         placeholderTextColor="#777"
-               keyboardType="email-address"
+        keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-      />
-          <TextInput
-        style={styles.input}
-        placeholder="Enter phone number"
-               keyboardType="phone-pad"
-        placeholderTextColor="#777"
-        value={phone}
-        onChangeText={setPhone}
       />
 <View style={styles.passwordContainer}>
         <TextInput
@@ -110,7 +103,8 @@ const styles = StyleSheet.create({
         padding: 20,
       justifyContent: 'center',
     },
-    title: {
+
+       title: {
       color: 'black',
       fontSize: 24,
       fontWeight: 'bold',

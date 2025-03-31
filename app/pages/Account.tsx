@@ -30,13 +30,6 @@ navigation.navigate("signIn");
              </TouchableOpacity>
            </View>
       <ScrollView>
-        <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("MyOrder")}>
-        <View style={styles.cardContent}>
-        <Feather name="codesandbox" size={24} color="black" style={styles.icon}/>
-          <Text style={styles.cardText}>My Orders</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={24} color="black" />
-      </TouchableOpacity>
       <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("Mydetail")}>
         <View style={styles.cardContent}>
           <Ionicons name="person-circle-outline" size={24} color="black" style={styles.icon} />
@@ -44,6 +37,14 @@ navigation.navigate("signIn");
         </View>
         <Ionicons name="chevron-forward" size={24} color="black" />
       </TouchableOpacity>
+        <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("MyOrder")}>
+        <View style={styles.cardContent}>
+        <Feather name="codesandbox" size={24} color="black" style={styles.icon}/>
+          <Text style={styles.cardText}>My Orders</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={24} color="black" />
+      </TouchableOpacity>
+   
        <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate("PaymentMethod")}>
         <View style={styles.cardContent}>
           <Ionicons name="card-outline" size={24} color="black" style={styles.icon} />

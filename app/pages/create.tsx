@@ -1,36 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import React, { useState} from 'react';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity,  FlatList, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { appwriteConfig,databases,storage } from '@/lib/config';
 import { ID } from 'react-native-appwrite';
-interface Props {
-  navigation: NavigationProp<any>;
-}
+import { appwriteConfig, databases, storage } from '../../lib/config'; 
 
-export default function CreateProductScreen({ navigation }: Props) {
+export default function CreateProductScreen() {
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
+  const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<string[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const response = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.productsCollectionId
-      );
-      setProducts(response.documents);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
+const [isSubmitting, setIsSubmitting] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -56,6 +36,7 @@ export default function CreateProductScreen({ navigation }: Props) {
             size: blob.size,
             uri,
           });
+
           return storage.getFilePreview(appwriteConfig.storageId, file.$id);
         })
       );
@@ -67,45 +48,54 @@ export default function CreateProductScreen({ navigation }: Props) {
   };
 
   const handleSubmit = async () => {
-    if (!productName || !price || !description || images.length === 0) {
+    if (!productName || !price || !description||!location || images.length === 0) {
       alert('Please fill in all fields and select images.');
       return;
     }
+    setIsSubmitting(true);
     try {
+      console.log("📤 Uploading images...");
       const uploadedImages = await uploadImages();
-      await databases.createDocument(
+      if (uploadedImages.length === 0)
+        throw new Error("No images uploaded.");
+      
+      console.log("✅ Uploaded Images:", uploadedImages);
+    const newProduct=  await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.productsCollectionId,
         ID.unique(),
         {
           name: productName,
-          price: price,
+          price: parseFloat(price),
+          location:location,
           description: description,
-          images: uploadedImages,
+          images:JSON.stringify(uploadedImages),
         }
       );
+      console.log("✅ Product created successfully:", newProduct);
       alert('Product uploaded successfully!');
       setProductName('');
       setPrice('');
       setDescription('');
       setImages([]);
-      fetchProducts();
-    } catch (error) {
-      console.error('Error uploading product:', error);
+      } catch (error:any) {
+        console.error("❌ Error uploading product:", error.message || error);
+        alert("Failed to upload product. Please try again.");
+    }
+    finally{
+      setIsSubmitting(false)
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Product</Text>
+              <Text style={styles.title}>Create Product</Text>
       </View>
 
       <TextInput style={styles.input} placeholder="Product Name" value={productName} onChangeText={setProductName} />
-      <TextInput style={styles.input} placeholder="Price" value={price} onChangeText={setPrice} keyboardType="numeric" />
+          <TextInput style={styles.input} placeholder="Price" value={price} onChangeText={setPrice} keyboardType="numeric" />
+      <TextInput style={styles.input} placeholder="Location" value={location} onChangeText={setLocation} />
       <TextInput style={styles.textArea} placeholder="Description" value={description} onChangeText={setDescription} multiline />
 
       <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
@@ -117,28 +107,16 @@ export default function CreateProductScreen({ navigation }: Props) {
         horizontal
         renderItem={({ item }) => <Image source={{ uri: item }} style={styles.previewImage} />}
       />
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Upload Product</Text>
+     <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={isSubmitting}>
+        {isSubmitting ? <ActivityIndicator color="white" /> : <Text style={styles.submitButtonText}>Upload Product</Text>}
       </TouchableOpacity>
-
-      <Text style={styles.subtitle}>Your Uploaded Products</Text>
-      {products.map((product, index) => (
-        <View key={index} style={styles.card}>
-          <Image source={{ uri: product.images[0] }} style={styles.cardImage} />
-          <View style={styles.cardDetails}>
-            <Text style={styles.cardTitle}>{product.name}</Text>
-            <Text style={styles.cardPrice}>${product.price}</Text>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: '#f8f9fa', flex: 1 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  header: { flexDirection: 'row', justifyContent: 'center',  marginBottom: 20 },
   title: { fontSize: 24, fontWeight: 'bold', color: 'black' },
   input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginBottom: 10 },
   textArea: { backgroundColor: 'white', padding: 10, borderRadius: 5, height: 100, textAlignVertical: 'top', marginBottom: 10 },
@@ -147,10 +125,5 @@ const styles = StyleSheet.create({
   previewImage: { width: 80, height: 80, borderRadius: 10, marginRight: 10 },
   submitButton: { backgroundColor: '#00A86B', padding: 15, borderRadius: 5, alignItems: 'center', marginBottom: 20 },
   submitButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  subtitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  card: { flexDirection: 'row', backgroundColor: 'white', padding: 10, borderRadius: 10, marginBottom: 10, alignItems: 'center' },
-  cardImage: { width: 80, height: 80, borderRadius: 10 },
-  cardDetails: { marginLeft: 15 },
-  cardTitle: { fontSize: 16, fontWeight: 'bold' },
-  cardPrice: { fontSize: 14, color: '#777' },
+  
 });

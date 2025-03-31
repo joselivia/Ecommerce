@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,20 @@ import {
   StyleSheet,
   FlatList,
   Image,
+  RefreshControl,
 } from "react-native";
-import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import FilterPopup from "../components/filterpop";
+import { getAllProducts} from "@/lib/config";
+import useAppwriting from "../../lib/UseAppwrite";
+
+interface Product {
+  $id: string;
+  name: string;
+  images: string;
+  price: number;
+}
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -19,64 +29,75 @@ interface Props {
 export default function HomeScreen({ navigation }: Props) {
   const [selectedTab, setSelectedTab] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false); 
-  const [wishlist, setWishlist] = useState<any[]>([]);
-  const allProducts = [
-    { id: "1", image: require("../../assets/images/icon.png"), name: "T-Shirt", price: "$20", discountPrice: "$15", category: "T-Shirts" },
-    { id: "2", image: require("../../assets/images/R.jpeg"), name: "Jeans", price: "$40", discountPrice: "$30", category: "Jeans" },
-    { id: "3", image: require("../../assets/images/R.jpeg"), name: "Shoes", price: "$60", discountPrice: "$50", category: "Shoes" },
-    { id: "4", image: require("../../assets/images/R.jpeg"), name: "Jacket", price: "$100", discountPrice: "$80", category: "Jackets" },
-    { id: "5", image: require("../../assets/images/R.jpeg"), name: "Jeans", price: "$40", discountPrice: "$30", category: "Jeans" },
-    { id: "6", image: require("../../assets/images/R.jpeg"), name: "Shoes", price: "$60", discountPrice: "$50", category: "Shoes" },
-    { id: "7", image: require("../../assets/images/R.jpeg"), name: "Jacket", price: "$100", discountPrice: "$80", category: "Jackets" },
-  ];
+  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+    const { data: products = [] ,refetch} = useAppwriting(getAllProducts);
+  // Pull to Refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
 
-const toggleWishlist=(item:any)=>{
-  setWishlist((prevWishlist) => {
-    const updatedWishlist = prevWishlist.some((wishlistItem)=>wishlistItem.id===item.id)
-      ? prevWishlist.filter((wishlistItem) => wishlistItem.id !== item.id)
-      : [...prevWishlist, item];
-    return updatedWishlist;
-  })
-}
-useEffect(() => {
-  navigation.navigate("wishlist", { wishlist: wishlist });
-}, [wishlist]);
-  const filteredProducts = allProducts.filter((product) => {
-    const matchesCategory = selectedTab === "All" || product.category === selectedTab;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+  // Wishlist Toggle
+  const toggleWishlist = (item: Product) => {
+    setWishlist((prevWishlist) => {
+      return prevWishlist.some((wishlistItem) => wishlistItem.$id === item.$id)
+        ? prevWishlist.filter((wishlistItem) => wishlistItem.$id !== item.$id)
+        : [...prevWishlist, item];
+        
+    });
+  };
+
+  const filteredProducts: Product[] = products.filter((product: Product) => {
+    const productName = product.name ? product.name.toLowerCase().trim() : "";
+    const selectedCategory = selectedTab.toLowerCase().trim();
+      const matchesCategory =
+      selectedTab === "All" || productName.includes(selectedCategory);
+      const matchesSearch = productName.includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
   });
+  
+  
 
-  const renderProductCard = ({ item }: any) => (
-    <View style={styles.card}>
-      <TouchableOpacity onPress={() => navigation.navigate("ProductDetail", { product: item })}>
-        <Image source={item.image} style={styles.productImage} />
-        <TouchableOpacity style={styles.likeIcon}>
-          <Ionicons name="heart-outline" size={20} color="#8000FF" />
+  const renderProductCard = ({ item }: { item: Product }) => {
+    const imageUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity onPress={() => navigation.navigate("ProductDetail", { product: item })}>
+          <Image source={{ uri: imageUrl }} style={styles.productImage} />
+          <TouchableOpacity style={styles.likeIcon} onPress={() => toggleWishlist(item)}>
+            <Ionicons
+              name={wishlist.some((wishlistItem) => wishlistItem.$id === item.$id) ? "heart" : "heart-outline"}
+              size={20}
+              color="#8000FF"
+            />
+          </TouchableOpacity>
+          <Text style={styles.productName}>{item.name}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.originalPrice}>$ {item.price}</Text>
+          </View>
         </TouchableOpacity>
-        <Text style={styles.productName}>{item.name}</Text>
-        <View style={styles.priceContainer}>
-          <Text style={styles.discountPrice}>{item.discountPrice}</Text>
-          <Text style={styles.originalPrice}>{item.price}</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
+      </View>
+    );
+  };
+  
 
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
+      <View style={styles.header}>
         <Text style={styles.discoveryText}>Discovery</Text>
         <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("notification")}>
-          <Ionicons name="notifications" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("wishlist", { wishlist })}>
-          <Ionicons name="heart" size={24} color="black" />
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("notification")}> 
+            <Ionicons name="notifications" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("wishlist", { wishlist })}>
+            <Ionicons name="heart" size={24} color="black" />
+          </TouchableOpacity>
         </View>
-           </View>
+      </View>
+
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Ionicons name="search-outline" size={20} color="#777" />
@@ -87,14 +108,12 @@ useEffect(() => {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <TouchableOpacity>
-            <FontAwesome name="microphone" size={20} color="#777" />
-          </TouchableOpacity>
-        </View>
+            </View>
         <TouchableOpacity style={styles.filterIcon} onPress={() => setIsFilterVisible(true)}>
           <MaterialIcons name="filter-list" size={24} color="black" />
         </TouchableOpacity>
       </View>
+
       <View style={styles.tabsContainer}>
         {["All", "T-Shirts", "Jeans", "Shoes", "Jackets"].map((tab, index) => (
           <TouchableOpacity
@@ -108,30 +127,18 @@ useEffect(() => {
       </View>
       <FlatList
         data={filteredProducts}
-        keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.productGrid}
-        renderItem={({ item }) => (
-           <View style={styles.card}>
-            <TouchableOpacity onPress={() => navigation.navigate("ProductDetail", { product: item })}>
-              <Image source={item.image} style={styles.productImage} />
-              <TouchableOpacity style={styles.likeIcon} onPress={() => toggleWishlist(item)}>
-                <Ionicons name={wishlist.some((wishlistItem) => wishlistItem.id === item.id) ? "heart" : "heart-outline"} size={20} color="#8000FF" />
-              </TouchableOpacity>
-              <Text style={styles.productName}>{item.name}</Text>
-              <View style={styles.priceContainer}>
-                <Text style={styles.discountPrice}>{item.discountPrice}</Text>
-                <Text style={styles.originalPrice}>{item.price}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        )}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        renderItem={renderProductCard}
+        keyExtractor={(item) => item.$id}
       />
+      
       {isFilterVisible && <FilterPopup onClose={() => setIsFilterVisible(false)} />}
-    
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  header: {
+  header: { 
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -203,10 +210,10 @@ gap:10,
     fontWeight: "bold",
   },
   productGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-       },
+    justifyContent: "center",
+    alignItems: "center", 
+    paddingBottom: 10,
+  },
   card: {
     maxWidth: 200,
     minWidth: 150,
@@ -245,15 +252,13 @@ marginVertical:5,
     marginLeft: 10,
     marginBottom: 10,
   },
-  discountPrice: {
+  originalPrice: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#8000FF",
     marginRight: 5,
-  },
-  originalPrice: {
-    fontSize: 14,
-    textDecorationLine: "line-through",
-    color: "#777",
-  },
+   },
+
 });
+
+

@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
-import { signIn } from "@/lib/config";
+import { account, signIn } from "@/lib/config";
 interface Props {
   navigation: NavigationProp<any>;
 }
@@ -19,6 +19,7 @@ export default function SignInScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async () => {
     if (!email || !password) {
       Toast.show({ type: "error", text1: "Validation Error", text2: "Enter email and password" });
