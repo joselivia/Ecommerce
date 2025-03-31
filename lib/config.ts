@@ -130,15 +130,3 @@ export const getLatestProducts = async () => {
     throw new Error(error);
   }
 }
-  export const fetchProducts = async () => {
-    const [products, setProducts] = useState<any[]>([]);
-    try {
-      const response = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.productsCollectionId
-      );
-      setProducts(response.documents);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
