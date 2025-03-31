@@ -112,9 +112,7 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
           <View style={styles.boardInfo}>
             <Text style={styles.boardTitle}>{item.title}</Text>
             <Text style={styles.itemCount}>{item.items.length} items</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.iconsContainer}>
+            <View style={styles.iconsContainer}>
           <TouchableOpacity onPress={() => addToBoard(item.id)}>
             <Icon name="plus" size={22} color="black" />
           </TouchableOpacity>
@@ -125,6 +123,9 @@ export default function SavedBoardsScreen({ navigation, route }: Props) {
             <Icon name="dots-horizontal" size={22} color="black" />
           </TouchableOpacity>
         </View>
+          </View>
+        </TouchableOpacity>
+   
       </View>
     );
   };
