@@ -10,6 +10,7 @@ import {
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import { useCart } from "../components/CartContext";
+import { formatPrice } from "@/lib/types";
 
 interface CartItem {
   id: string;
@@ -63,7 +64,7 @@ const CartScreen = ({ navigation }: Props) => {
       <View style={styles.itemDetails}>
         <Text style={styles.itemTitle}>{item.title || "Unnamed Item"}</Text>
         <Text style={styles.itemSize}>Size {item.size || "N/A"}</Text>
-        <Text style={styles.itemPrice}>${item.price || 0}</Text>
+        <Text style={styles.itemPrice}>{formatPrice(item.price) || 0}</Text>
       </View>
       <View style={styles.itemActions}>
         <View style={styles.quantityControl}>
@@ -116,11 +117,11 @@ const CartScreen = ({ navigation }: Props) => {
         </View>
         <View style={styles.rowBetween}>
           <Text style={styles.summaryText}>Shipping fee</Text>
-          <Text style={styles.summaryText}>${shippingFee}</Text>
+          <Text style={styles.summaryText}>{formatPrice(shippingFee)}</Text>
         </View>
         <View style={styles.rowBetween}>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalText}>${total}</Text>
+          <Text style={styles.totalText}>{formatPrice(total)}</Text>
         </View>
       </View>
 

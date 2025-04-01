@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { databases, storage, appwriteConfig, getCurrentUser } from "@/lib/config";
 import { Query, ID, Models } from "react-native-appwrite";
 import { Feather } from "@expo/vector-icons";
+import { formatPrice } from "@/lib/types";
 
-// Define TypeScript interfaces
 interface User extends Models.Document {
   accountId: string;
   username: string;
@@ -42,12 +43,12 @@ export default function UserInfo() {
   useEffect(() => {
     const fetchUserAndProducts = async () => {
       try {
-            const userData = await getCurrentUser();
-        setUser(userData as unknown as User); 
+        const userData = await getCurrentUser();
+        setUser(userData as unknown as User);
         const userProducts = await databases.listDocuments<Product>(
           appwriteConfig.databaseId,
           appwriteConfig.productsCollectionId,
-          [Query.equal("users", userData.id)] 
+          [Query.equal("users", userData.id)]
         );
         setProducts(userProducts.documents);
       } catch (err: any) {
@@ -99,7 +100,6 @@ export default function UserInfo() {
     }
   };
 
-  // Delete product
   const deleteProduct = async (productId: string) => {
     Alert.alert(
       "Confirm Delete",
@@ -127,19 +127,16 @@ export default function UserInfo() {
     );
   };
 
-  // Edit product (placeholder)
   const editProduct = (product: Product) => {
     Alert.alert("Edit Product", `Editing ${product.name} (Functionality TBD)`);
-    // Add edit logic here (e.g., navigate to an edit screen)
   };
-
 
   const renderProductItem = ({ item }: { item: Product }) => (
     <View style={styles.productItem}>
       <Image source={{ uri: item.images[0] }} style={styles.productImage} />
       <View style={styles.productDetails}>
         <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>${item.price}</Text>
+        <Text style={styles.productPrice}>{formatPrice(item.price)}</Text>
       </View>
       <TouchableOpacity
         style={styles.menuButton}
@@ -165,60 +162,65 @@ export default function UserInfo() {
   if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   return (
-    <View style={styles.container}>
-      {/* Avatar Section */}
-      <View style={styles.avatarContainer}>
-        <TouchableOpacity onPress={uploadAvatar} disabled={avatarUploading}>
-          <Image
-            source={{ uri: user?.avatar || "https://via.placeholder.com/150" }}
-            style={styles.avatar}
+    <ScrollView nestedScrollEnabled={true} style={styles.scrollContainer}>
+      <View style={styles.container}>
+        <View style={styles.avatarContainer}>
+          <TouchableOpacity onPress={uploadAvatar} disabled={avatarUploading}>
+            <Image
+              source={{ uri: user?.avatar || "https://via.placeholder.com/150" }}
+              style={styles.avatar}
+            />
+            {avatarUploading && (
+              <ActivityIndicator size="small" color="#8000FF" style={styles.avatarLoading} />
+            )}
+          </TouchableOpacity>
+          <Text style={styles.changeAvatarText}>Tap to change avatar</Text>
+          <View style={styles.statsRow}>
+            <Text style={styles.statsText}>Total Products: {products.length}</Text>
+          </View>
+        </View>
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Full Name</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>{user?.username || "N/A"}</Text>
+          </View>
+          <Text style={styles.label}>Email Address</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>{user?.email || "N/A"}</Text>
+          </View>
+          <Text style={styles.label}>Phone Number</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>{user?.phone || "N/A"}</Text>
+          </View>
+        </View>
+
+        {/* Products FlatList */}
+        <View style={styles.productsContainer}>
+          <Text style={styles.sectionTitle}>Your Products</Text>
+          <FlatList
+            data={products}
+            renderItem={renderProductItem}
+            keyExtractor={(item) => item.$id}
+            scrollEnabled={false} // Disable FlatList scrolling
+            ListEmptyComponent={<Text style={styles.emptyText}>No products uploaded yet.</Text>}
           />
-          {avatarUploading && (
-            <ActivityIndicator size="small" color="#8000FF" style={styles.avatarLoading} />
-          )}
-        </TouchableOpacity>
-        <Text style={styles.changeAvatarText}>Tap to change avatar</Text>
-      </View>
-
-      {/* Total Products Count */}
-      <View style={styles.statsRow}>
-        <Text style={styles.statsText}>Total Products: {products.length}</Text>
-      </View>
-
-      {/* User Details */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Full Name</Text>
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>{user?.username || "N/A"}</Text>
-        </View>
-        <Text style={styles.label}>Email Address</Text>
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>{user?.email || "N/A"}</Text>
-        </View>
-        <Text style={styles.label}>Phone Number</Text>
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>{user?.phone || "N/A"}</Text>
         </View>
       </View>
-
-      {/* Products FlatList */}
-      <View style={styles.productsContainer}>
-        <Text style={styles.sectionTitle}>Your Products</Text>
-        <FlatList
-          data={products}
-          renderItem={renderProductItem}
-          keyExtractor={(item) => item.$id}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<Text style={styles.emptyText}>No products uploaded yet.</Text>}
-        />
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  avatarContainer: { alignItems: "center", marginBottom: 20 },
+  scrollContainer: { flex: 1, backgroundColor: "#fff" },
+  container: { padding: 20 },
+  avatarContainer: {
+    alignItems: "center",
+    borderWidth: 2,
+    borderRadius: 20,
+    borderColor: "#ccc",
+    padding: 5,
+  },
   avatar: { width: 120, height: 120, borderRadius: 60, borderWidth: 2, borderColor: "#8000FF" },
   avatarLoading: {
     position: "absolute",
@@ -227,11 +229,17 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -12 }, { translateY: -12 }],
   },
   changeAvatarText: { color: "#8000FF", marginTop: 10, fontSize: 14 },
-  statsRow: { flexDirection: "row", justifyContent: "center", marginBottom: 20 },
+  statsRow: { flexDirection: "row", justifyContent: "center" },
   statsText: { fontSize: 16, fontWeight: "bold", color: "#333" },
-  infoContainer: { marginBottom: 20 },
+  infoContainer: { marginBottom: 10 },
   label: { fontSize: 16, fontWeight: "bold", marginTop: 15, marginBottom: 5 },
-  infoBox: { padding: 12, backgroundColor: "#f9f9f9", borderRadius: 8, borderWidth: 1, borderColor: "#ccc" },
+  infoBox: {
+    padding: 12,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
   infoText: { fontSize: 16, color: "#333" },
   productsContainer: { flex: 1 },
   sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },

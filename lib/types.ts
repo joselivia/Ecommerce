@@ -35,3 +35,12 @@ export type TabParamList = {
   Cart: undefined;
   Account: undefined;
 };
+
+export const formatPrice = (price: number): string => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 0, 
+  });
+};

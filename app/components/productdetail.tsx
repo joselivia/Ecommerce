@@ -10,7 +10,7 @@ import {
   Modal,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList} from "../../lib/types";
+import { formatPrice, RootStackParamList} from "../../lib/types";
 import { useCart } from "../components/CartContext";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons"; 
@@ -81,7 +81,7 @@ export default function ProductDetailScreen({ route, navigation }: Props) {
       <Text style={styles.productName}>{product.name}</Text>
       <Text style={styles.productLocation}>📍 {product.location}</Text>
       <View style={styles.priceContainer}>
-        <Text style={styles.price}>$ {product.price}</Text>
+        <Text style={styles.price}>$ {formatPrice(product.price)}</Text>
       </View>
       <Text style={styles.productDescription}>{product.description}</Text>
       <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
