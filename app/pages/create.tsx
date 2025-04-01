@@ -4,17 +4,27 @@ import * as ImagePicker from 'expo-image-picker';
 import { ID, Query } from 'react-native-appwrite';
 import { appwriteConfig, databases, storage, getCurrentUser } from '../../lib/config'; 
 import Toast from 'react-native-toast-message';
+import { navigate } from 'expo-router/build/global-state/routing';
+import { NavigationProp } from '@react-navigation/native';
 
-export default function CreateProductScreen() {
+
+interface User {
+  accountId: string;
+  email: string;
+  username: string;
+}
+interface Props {
+  navigation: NavigationProp<any>;
+}
+export default function CreateProductScreen({navigation}: Props) {
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [user, setUser] = useState<any>(null);  // State to store the logged-in user
+  const [user, setUser] = useState<User | null>(null);
 
-  // Fetch the current logged-in user on component mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -22,6 +32,7 @@ export default function CreateProductScreen() {
         setUser(currentUser);
       } catch (error) {
         console.error("Error fetching user:", error);
+
       }
     };
 
@@ -68,50 +79,45 @@ export default function CreateProductScreen() {
       alert('Please fill in all fields, select images, and ensure you are logged in.');
       return;
     }
-
+  
     setIsSubmitting(true);
     try {
-      const currentUser = await getCurrentUser();
-      console.log("✅ Current User ID Type:", typeof currentUser.accountId);
-      console.log("✅ Current User ID:", currentUser.accountId);
 
+       const currentUser = await getCurrentUser();
+      if (!currentUser || !currentUser.accountId) 
+        throw new Error("User not found. Please log in again.");
+  
       if (!currentUser || !currentUser.accountId) {
         throw new Error("User not found. Please log in again.");
       }
+  
       const uploadedImages = await uploadImages();
       if (uploadedImages.length === 0) throw new Error("No images uploaded.");
-
+  
+  
       const newProduct = await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.productsCollectionId,
-        ID.unique(),
-        {
+        ID.unique(),{
           name: productName,
           price: parseFloat(price),
           location,
           description,
           images: uploadedImages,
-          users: currentUser.accountId,
+          users: currentUser.id,
         }
-
-      );
-      const products = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.productsCollectionId,
-        [Query.limit(5)]
-      );
-      console.log("🛠 Retrieved Products:", products);
+          );
   
-
       Toast.show({ type: "success", text1: "Product uploaded successfully" });
       setProductName('');
       setPrice('');
       setLocation('');
       setDescription('');
       setImages([]);
+      navigation.navigate("tabs");
+      return newProduct;
     } catch (error: any) {
       alert("Failed to upload product. Please try again.");
-      console.error("Product upload error:", error);
     } finally {
       setIsSubmitting(false);
     }

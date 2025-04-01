@@ -95,6 +95,7 @@ if (!currentUser || currentUser.documents.length === 0) {
   }
   const userData = currentUser.documents[0];
   return {
+    id: userData.$id,
     accountId: userData.accountId,
     email: userData.email,
     username: userData.username,
