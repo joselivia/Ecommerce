@@ -4,6 +4,7 @@ export type RootStackParamList = {
   tabs: undefined; 
   signIn: undefined;
   signUp: undefined;
+  verifyEmail: undefined;
   notification: undefined;
   resetPassword: undefined;
   Resetverification: undefined;

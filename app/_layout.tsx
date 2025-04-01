@@ -18,6 +18,7 @@ import Toast from "react-native-toast-message";
 import ResetPassScreen from "./Auth/Resetpass";
 import VerificationScreen from "./Auth/Resetverification";
 import { CartProvider } from "./components/CartContext";
+import VerifyEmailScreen from "./Auth/veirificationEmail";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -35,8 +36,9 @@ export default function RootLayout() {
         <Stack.Screen
           name="signUp"
           component={SignUpScreen}
-          options={{ title: "Sign Up", headerTitleAlign: "center" }}
+          options={{ title: "Sign Up", headerTitleAlign: "center", }}
         />
+        <Stack.Screen name="verifyEmail" component={VerifyEmailScreen} options={{ title: "Verification", headerTitleAlign: "center" }} />
         <Stack.Screen
           name="notification"
           component={NotificationScreen}

@@ -27,23 +27,24 @@ export const createUser = async (
 ) => {     
   try {
     const newAccount = await account.create(ID.unique(), email, password, username);
-    if (!newAccount) throw new Error("❌ Account creation failed");
-        await new Promise((resolve) => setTimeout(resolve, 2000)); 
-    const session = await account.createEmailPasswordSession(email, password);
-    const authenticatedUser = await account.get(); 
+    if (!newAccount) {
+      console.error('Account creation returned null/undefined');
+      throw new Error("Account creation failed");
+    }
+    console.log('Account created successfully:', { accountId: newAccount.$id });
     const avatarUrl = avatars.getInitials(username);
     const newUser = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
       {
-        accountId: authenticatedUser.$id,
+        accountId: newAccount.$id,
         email: email,
         username: username,
         avatar: avatarUrl,
       }
     );
-    return newUser;
+     return newUser;
   } catch (error: any) {
     throw new Error(error.message || "An unexpected error occurred");
   }
@@ -59,11 +60,13 @@ export async function signIn(email: string, password: string){
       console.log("No active session to delete, proceeding...");
     }
      const session = await account.createEmailPasswordSession(email, password);
-    if (!session) {
+    if (!session) 
       throw new Error("Login session was not created.");
-    }
-    const user = await getCurrentUser();
-    return user;
+    const user = await account.get();
+    if (!user.emailVerification)    throw new Error("Please verify your email before logging in");
+  
+    return await getCurrentUser();
+
   } catch (error: any) {
      throw new Error(error);
   }

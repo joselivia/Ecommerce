@@ -26,10 +26,17 @@ export default function SignUpScreen({navigation}: Props) {
     try{  
       
       const newUser = await createUser(email,password,username);
-      Toast.show({ type: "success", text1: "Account created successfully" });
- navigation.navigate("signIn");
+      Toast.show({ type: "success", text1: "Account created successfully",text2: "Please check your email to verify your account" });
+
+      console.log("Navigating to verifyEmail...");
+ navigation.navigate("verifyEmail");
     }catch(error:any){
-        Toast.show({ type: "error", text1:"Signup failed" + error.message });
+      console.error('Signup error:', error);
+      Toast.show({ 
+        type: "error", 
+        text1: "Signup failed",
+        text2: error.message || "Please try again"
+      });
     } finally{
         setIsSubmitting(false);
     } 
