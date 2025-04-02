@@ -10,10 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
-import { account, signIn } from "@/lib/config";
+import { signIn } from "@/lib/config";
+
 interface Props {
   navigation: NavigationProp<any>;
 }
+
 export default function SignInScreen({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,10 +25,10 @@ export default function SignInScreen({ navigation }: Props) {
   const handleSubmit = async () => {
     if (!email || !password) {
       Toast.show({ type: "error", text1: "Validation Error", text2: "Enter email and password" });
-     }
+    }
     setIsSubmitting(true);
     try {
-       await signIn(email, password);
+      await signIn(email, password);
       Toast.show({ type: "success", text1: "Login successful" });
       navigation.navigate("tabs");
     } catch (error: any) {
@@ -35,54 +37,57 @@ export default function SignInScreen({ navigation }: Props) {
       } else {
         Toast.show({ type: "error", text1: "Login Failed", text2: error.message });
       }
-  } finally {
+    } finally {
       setIsSubmitting(false);
-  }}
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.socialButtons}>  
-    <TouchableOpacity style={styles.socialButton}>
-        <Ionicons name="logo-google" size={20} />
-        <Text style={styles.socialButtonText}>Continue With Google</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>Welcome Back!</Text>
+      <Text style={styles.subtitle}>Sign in to explore exclusive deals</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
-        <Ionicons name="logo-twitter" size={20} color="#1500af" />
-        <Text style={styles.socialButtonText}>Continue With Twitter</Text>
-      </TouchableOpacity>
-      </View>
       <TextInput
         style={styles.input}
-        placeholder="Enter your username or email address"
-        placeholderTextColor="#777"
-        secureTextEntry={false}
+        placeholder="Email or Username"
+        placeholderTextColor="#888"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-         />
+      />
 
-<View style={styles.passwordContainer}>
+      <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Enter your password"
-          placeholderTextColor="#777"
+          placeholder="Password"
+          placeholderTextColor="#888"
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Ionicons name={showPassword ? "eye" : "eye-off"} size={20} color="#777" />
+          <Ionicons name={showPassword ? "eye" : "eye-off"} size={24} color="#555" />
         </TouchableOpacity>
       </View>
+
       <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
-        {isSubmitting ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Sign In</Text>}
+        {isSubmitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => navigation.navigate("resetPassword")}>
-        <Text style={styles.linkText}>Forgot your password?</Text>
+        <Text style={styles.linkText}>Forgot Password?</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("signUp")}>
-        <Text style={styles.linkText}>Don't have an account? Sign up</Text>
-      </TouchableOpacity>
+
+      <View style={styles.signUpContainer}>
+        <Text style={styles.signUpPrompt}>New here? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("signUp")}>
+          <Text style={styles.signUpLink}>Create an Account</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -90,87 +95,89 @@ export default function SignInScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 25,
     justifyContent: "center",
+    backgroundColor: "#f5f5f5",
   },
   title: {
-    color: "black",
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#1a1a1a", 
     textAlign: "center",
+    marginBottom: 10,
   },
-  socialButtons:{
-borderWidth: 1,
-borderColor: '#a69aff',
-borderRadius: 11,
-boxShadow: "0 0 10px rgb(185, 244, 195)",
-marginBottom: 15
-},
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  input: {
+    backgroundColor: "#fff",
     padding: 15,
-    borderRadius: 5,
-    marginBottom: 15,
-  },
-  socialButtonText: {
-    color: "#a69aff",
-    marginLeft: 10,
+    borderRadius: 12,
+    marginBottom: 20,
+    fontSize: 16,
+    color: "#333",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-    borderRadius: 5,
+    backgroundColor: "#fff",
+    borderRadius: 12,
     paddingHorizontal: 15,
-    marginBottom: 15,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   passwordInput: {
     flex: 1,
     paddingVertical: 15,
-    color: "black",
-    
-  },
-  input: {
-    color: "black",
-    padding: 15,
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingLeft: 15,
+    fontSize: 16,
+    color: "#333",
   },
   button: {
-    backgroundColor: "#8000FF",
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: "#ff4d4d", 
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 20,
+    shadowColor: "#ff4d4d",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5, 
   },
   buttonText: {
-    color: "white",
-    fontWeight: "bold",
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
   linkText: {
-    color: "#8000FF",
+    color: "#ff4d4d",
     textAlign: "center",
-    marginTop: 10,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    fontSize: 14,
     marginBottom: 15,
   },
-  checkbox: {
-    width: 20,
-    height: 20,
-    backgroundColor: "#222",
-    marginRight: 10,
-    borderRadius: 3,
+  signUpContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  checkboxText: {
-    color: "white",
+  signUpPrompt: {
+    color: "#666",
     fontSize: 14,
+  },
+  signUpLink: {
+    color: "#ff4d4d",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

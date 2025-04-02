@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { SignOut } from '@/lib/config';
+import { signOut } from '@/lib/config';
 interface Props {
     navigation: NavigationProp<any>;
 }
@@ -12,7 +12,7 @@ export default function AccountScreen ({navigation}: Props) {
   const handleLogout = async() => {
     setModalVisible(false);
 try{
-await SignOut();
+await signOut();
 navigation.navigate("signIn");
 }catch(error:any){
   console.log(error);

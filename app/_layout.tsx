@@ -1,6 +1,11 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../lib/types"; 
+import { checkSession } from "@/lib/config";
+import { ActivityIndicator, View } from "react-native";
+import Toast from "react-native-toast-message";
+import { CartProvider } from "./components/CartContext";
 import Index from "./index";
 import SignInScreen from "./Auth/SignInScreen";
 import SignUpScreen from "./Auth/SignUpScreen";
@@ -14,93 +19,74 @@ import NewCardScreen from "./payment/newcard";
 import UserInfo from "./Auth/Profile";
 import WishListScreen from "./components/WishList";
 import ProductDetailScreen from "./components/productdetail";
-import Toast from "react-native-toast-message";
 import ResetPassScreen from "./Auth/Resetpass";
 import VerificationScreen from "./Auth/Resetverification";
-import { CartProvider } from "./components/CartContext";
-import VerifyEmailScreen from "./Auth/veirificationEmail";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    const validateSession = async () => {
+      try {
+        const user = await checkSession();
+        setIsSignedIn(!!user);
+      } catch (error) {
+        console.error("Session check failed:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    validateSession();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#ff4d4d" />
+      </View>
+    );
+  }
+
   return (
     <CartProvider>
-      <Stack.Navigator initialRouteName="index">
-        <Stack.Screen name="index" component={Index} options={{ headerShown: false }} />
-        <Stack.Screen name="tabs" component={TabLayout} options={{ headerShown: false }} />
-        <Stack.Screen
-          name="signIn"
-          component={SignInScreen}
-          options={{ title: "Sign In", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="signUp"
-          component={SignUpScreen}
-          options={{ title: "Sign Up", headerTitleAlign: "center", }}
-        />
-        <Stack.Screen name="verifyEmail" component={VerifyEmailScreen} options={{ title: "Verification", headerTitleAlign: "center" }} />
-        <Stack.Screen
-          name="notification"
-          component={NotificationScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="resetPassword"
-          component={ResetPassScreen}
-          options={{ title: "Reset Password", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="Resetverification"
-          component={VerificationScreen}
-          options={{ title: "Verification", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetailScreen}
-          options={{ title: "Product Details", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="Customerservice"
-          component={CustomerServiceScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="MyOrder"
-          component={MyOrdersScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="HelpCenter"
-          component={HelpCenterScreen}
-          options={{ title: "Help Center", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="PaymentMethod"
-          component={PaymentMethodScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AddCard"
-          component={NewCardScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Mydetail"
-          component={UserInfo}
-          options={{ title: "Profile", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
-          name="userinfo"
-          component={UserInfo}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="wishlist"
-          component={WishListScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-      <Toast />
+ <Stack.Navigator
+          initialRouteName={isSignedIn ? "tabs" : "signIn"}
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="index" component={Index} />
+          <Stack.Screen name="tabs" component={TabLayout} />
+          <Stack.Screen
+            name="signIn"
+            component={SignInScreen}
+            options={{ title: "Sign In", headerTitleAlign: "center", headerShown: true }}
+          />
+          <Stack.Screen
+            name="signUp"
+            component={SignUpScreen}
+            options={{ title: "Sign Up", headerTitleAlign: "center", headerShown: true }}
+          />
+          {/* <Stack.Screen
+            name="verifyEmail"
+            component={VerifyEmailScreen}
+            options={{ title: "Verification", headerTitleAlign: "center", headerShown: true }}
+          /> */}
+          <Stack.Screen name="notification" component={NotificationScreen} />
+          <Stack.Screen name="resetPassword" component={ResetPassScreen} options={{ title: "Reset Password", headerTitleAlign: "center", headerShown: true }} />
+          <Stack.Screen name="Resetverification" component={VerificationScreen} options={{ title: "Verification", headerTitleAlign: "center", headerShown: true }} />
+          <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: "Product Details", headerTitleAlign: "center", headerShown: true }} />
+          <Stack.Screen name="Customerservice" component={CustomerServiceScreen} />
+          <Stack.Screen name="MyOrder" component={MyOrdersScreen} />
+          <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ title: "Help Center", headerTitleAlign: "center", headerShown: true }} />
+          <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} />
+          <Stack.Screen name="AddCard" component={NewCardScreen} />
+          <Stack.Screen name="Mydetail" component={UserInfo} options={{ title: "Profile", headerTitleAlign: "center", headerShown: true }} />
+          <Stack.Screen name="userinfo" component={UserInfo} />
+          <Stack.Screen name="wishlist" component={WishListScreen} />
+        </Stack.Navigator>
+        <Toast />
     </CartProvider>
   );
 }

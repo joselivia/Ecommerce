@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
+
 export const appwriteConfig = {
   endpoint: "https://cloud.appwrite.io/v1",
   projectId: "67e14174000f4325195b",
@@ -31,7 +33,6 @@ export const createUser = async (
       console.error('Account creation returned null/undefined');
       throw new Error("Account creation failed");
     }
-    console.log('Account created successfully:', { accountId: newAccount.$id });
     const avatarUrl = avatars.getInitials(username);
     const newUser = await databases.createDocument(
       appwriteConfig.databaseId,
@@ -44,7 +45,7 @@ export const createUser = async (
         avatar: avatarUrl,
       }
     );
-     return newUser;
+      return newUser;
   } catch (error: any) {
     throw new Error(error.message || "An unexpected error occurred");
   }
@@ -60,28 +61,50 @@ export async function signIn(email: string, password: string){
       console.log("No active session to delete, proceeding...");
     }
      const session = await account.createEmailPasswordSession(email, password);
-    if (!session) 
-      throw new Error("Login session was not created.");
-    const user = await account.get();
-    if (!user.emailVerification)    throw new Error("Please verify your email before logging in");
-  
-    return await getCurrentUser();
+    if (!session) throw new Error("Login session was not created.");
+    console.log("Session created:", session.$id);
+    await AsyncStorage.setItem("sessionId", session.$id);
+    console.log("Session ID stored in AsyncStorage:", session.$id);
+
+    const user =await getCurrentUser();
+    return user;
 
   } catch (error: any) {
-     throw new Error(error);
+    console.error("Sign-in error:", error.message);
+    throw new Error(error.message || "Login failed");
   }
 }
 
 
-export async function SignOut() {
+export async function signOut() {
   try {
+    await account.deleteSession("current");
+    await AsyncStorage.removeItem("sessionId");
+    console.log("User signed out successfully");
     return true;
   } catch (error: any) {
-
-    throw new Error(error);
+    console.error("Sign-out error:", error.message);
+    throw new Error(error.message || "Failed to sign out");
   }
 }
 
+export async function checkSession() {
+  try {
+    const sessionId = await AsyncStorage.getItem("sessionId");
+    if (!sessionId) {
+      console.log("No session ID found in AsyncStorage");
+      return null;
+    }
+    console.log("Found stored session ID:", sessionId);
+    const user = await account.get();
+    console.log("Session validated, current user:", user.$id);
+    return await getCurrentUser();
+  } catch (error: any) {
+    console.error("Session check failed:", error.message);
+    await AsyncStorage.removeItem("sessionId"); 
+    return null;
+  }
+}
 export const getCurrentUser=async()=> {
   try {
     const currentAccount = await account.get();
@@ -94,6 +117,7 @@ export const getCurrentUser=async()=> {
   ]
 )
 if (!currentUser || currentUser.documents.length === 0) {
+  console.error("No user document found for account:", currentAccount.$id);
     throw new Error("User not found");
   }
   const userData = currentUser.documents[0];
@@ -105,9 +129,8 @@ if (!currentUser || currentUser.documents.length === 0) {
     phone: userData.phone || "",
     avatar: userData.avatar || "",
   };
-  } catch (error: any) {
-
-    throw new Error(error);
+  } catch (error: any) {console.error("Get current user error:", error.message);
+    throw new Error(error.message || "Failed to retrieve current user");
   }
 }
 
