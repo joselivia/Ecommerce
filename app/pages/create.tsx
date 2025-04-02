@@ -10,18 +10,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { ID } from "react-native-appwrite";
-import { appwriteConfig, databases, storage, getCurrentUser } from "../../lib/config";
+import { appwriteConfig, databases, storage, getCurrentUser, User } from "../../lib/config";
 import Toast from "react-native-toast-message";
 import { NavigationProp } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for the "X" icon
+import { Ionicons } from "@expo/vector-icons";
 
-interface User {
-  accountId: string;
-  email: string;
-  username: string;
-  id: string; // Added to match getCurrentUser return type
-}
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -32,10 +27,27 @@ export default function CreateProductScreen({ navigation }: Props) {
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
+  const categories = [
+    { label: "Select a category...", value: "" }, 
+    { label: "Electronics & Gadgets", value: "electronics_gadgets" },
+    { label: "Fashion & Apparel", value: "fashion_apparel" },
+    { label: "Footwear (Shoes & Sneakers)", value: "footwear" },
+    { label: "Home & Living", value: "home_living" },
+    { label: "Beauty & Personal Care", value: "beauty_personal_care" },
+    { label: "Health & Wellness", value: "health_wellness" },
+    { label: "Food & Groceries", value: "food_groceries" },
+    { label: "Baby & Kids", value: "baby_kids" },
+    { label: "Sports & Outdoors", value: "sports_outdoors" },
+    { label: "Automotive & Tools", value: "automotive_tools" },
+    { label: "Books & Stationery", value: "books_stationery" },
+    { label: "Gaming & Entertainment", value: "gaming_entertainment" },
+    { label: "Pet Supplies", value: "pet_supplies" },
+  ];
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -115,8 +127,8 @@ export default function CreateProductScreen({ navigation }: Props) {
   };
 
   const handleSubmit = async () => {
-    if (!productName || !price || !description || !location || images.length === 0 || !user) {
-      alert("Please fill in all fields, select at least one image, and ensure you are logged in.");
+    if (!productName || !price || !description || !location || !category || images.length === 0 || !user) {
+      alert("Please fill in all fields, select a category, at least one image, and ensure you are logged in.");
       return;
     }
 
@@ -139,6 +151,7 @@ export default function CreateProductScreen({ navigation }: Props) {
           price: parseFloat(price),
           location,
           description,
+          category, 
           images: uploadedImages,
           users: currentUser.id,
         }
@@ -149,6 +162,7 @@ export default function CreateProductScreen({ navigation }: Props) {
       setPrice("");
       setLocation("");
       setDescription("");
+      setCategory(""); 
       setImages([]);
       navigation.navigate("tabs");
       return newProduct;
@@ -204,15 +218,28 @@ export default function CreateProductScreen({ navigation }: Props) {
         multiline
       />
 
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={category}
+          onValueChange={(itemValue) => setCategory(itemValue as string)}
+          style={styles.picker}
+        >
+          {categories.map((cat) => (
+            <Picker.Item key={cat.value} label={cat.label} value={cat.value} />
+          ))}
+        </Picker>
+      </View>
+
       <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
         <Text style={styles.imagePickerText}>Pick Images (Max 3)</Text>
       </TouchableOpacity>
 
       <FlatList
         data={images}
+        style={styles.imageList}
         horizontal
         renderItem={renderImageItem}
-        keyExtractor={(index) => index.toString()}
+        keyExtractor={(item) => item}
         ListEmptyComponent={<Text style={styles.emptyText}>No images selected yet.</Text>}
       />
 
@@ -231,7 +258,7 @@ const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#f8f9fa", flex: 1 },
   header: { flexDirection: "row", justifyContent: "center", marginBottom: 20 },
   title: { fontSize: 24, fontWeight: "bold", color: "black" },
-  input: { backgroundColor: "white",borderWidth: 1, padding: 10, borderRadius: 5, marginBottom: 10 },
+  input: { backgroundColor: "white", borderWidth: 1, padding: 10, borderRadius: 5, marginBottom: 10 },
   textArea: {
     backgroundColor: "white",
     padding: 10,
@@ -241,6 +268,16 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     marginBottom: 10,
   },
+  pickerContainer: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+  },
   imagePicker: {
     backgroundColor: "#8000FF",
     padding: 10,
@@ -248,7 +285,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imagePickerText: { color: "white", fontWeight: "bold" },
-  imageContainer: { position: "relative", padding:10, marginRight: 10 },
+  imageList:{ borderWidth:2 ,borderRadius: 5, margin: 3,},
+  imageContainer: { position: "relative", padding: 2, margin: 10, },
   previewImage: { width: 80, height: 80, borderRadius: 10, borderWidth: 2 },
   removeButton: {
     position: "absolute",
@@ -262,7 +300,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
-   marginBottom:200 
+    marginBottom: 100,
   },
   submitButtonText: { color: "white", fontWeight: "bold", fontSize: 16 },
   emptyText: { fontSize: 14, color: "#666", textAlign: "center" },

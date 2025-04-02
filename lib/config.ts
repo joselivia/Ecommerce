@@ -1,6 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
-
+export interface User {
+  id: string;
+  accountId: string;
+  username: string;
+  email: string;
+  phone: string;
+  avatar: string;
+}
 export const appwriteConfig = {
   endpoint: "https://cloud.appwrite.io/v1",
   projectId: "67e14174000f4325195b",
@@ -57,20 +64,17 @@ export async function signIn(email: string, password: string){
     try {
       await account.get();
       await account.deleteSession("current");
-    } catch (e) {
-      console.log("No active session to delete, proceeding...");
+    } catch (error: any) {
+       throw new Error(error.message || "Login failed");
     }
      const session = await account.createEmailPasswordSession(email, password);
     if (!session) throw new Error("Login session was not created.");
-    console.log("Session created:", session.$id);
     await AsyncStorage.setItem("sessionId", session.$id);
-    console.log("Session ID stored in AsyncStorage:", session.$id);
-
     const user =await getCurrentUser();
     return user;
 
   } catch (error: any) {
-    console.error("Sign-in error:", error.message);
+
     throw new Error(error.message || "Login failed");
   }
 }
@@ -80,10 +84,8 @@ export async function signOut() {
   try {
     await account.deleteSession("current");
     await AsyncStorage.removeItem("sessionId");
-    console.log("User signed out successfully");
-    return true;
+     return true;
   } catch (error: any) {
-    console.error("Sign-out error:", error.message);
     throw new Error(error.message || "Failed to sign out");
   }
 }
@@ -133,7 +135,6 @@ if (!currentUser || currentUser.documents.length === 0) {
     throw new Error(error.message || "Failed to retrieve current user");
   }
 }
-
 // products
 export const getAllProducts = async () => {
   try {
@@ -159,3 +160,17 @@ export const getLatestProducts = async () => {
     throw new Error(error);
   }
 }
+
+const getProductsByCategory = async (category: string) => {
+  try {
+    const products = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.productsCollectionId,
+      [Query.equal("category", category)]
+    );
+    return products.documents;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+};

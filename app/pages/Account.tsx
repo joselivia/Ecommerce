@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal } fr
 import { Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { signOut } from '@/lib/config';
+import Toast from 'react-native-toast-message';
 interface Props {
     navigation: NavigationProp<any>;
 }
@@ -13,7 +14,8 @@ export default function AccountScreen ({navigation}: Props) {
     setModalVisible(false);
 try{
 await signOut();
-navigation.navigate("signIn");
+Toast.show({type:"success", text1:"Logout successful"});
+navigation.reset({index:0, routes:[{name:"signIn"}]});
 }catch(error:any){
   console.log(error);
 }
@@ -73,8 +75,6 @@ navigation.navigate("signIn");
           <Text style={styles.cardText}>Logout</Text>
         </View>
       </TouchableOpacity>
-
-      {/* Logout Confirmation Modal */}
       <Modal transparent={true} visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>

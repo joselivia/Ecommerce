@@ -11,18 +11,10 @@ import {
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { databases, storage, appwriteConfig, getCurrentUser } from "@/lib/config";
+import { databases, storage, appwriteConfig, getCurrentUser, User } from "@/lib/config";
 import { Query, ID, Models } from "react-native-appwrite";
 import { Feather } from "@expo/vector-icons";
 import { formatPrice } from "@/lib/types";
-
-interface User extends Models.Document {
-  accountId: string;
-  username: string;
-  email: string;
-  phone: string;
-  avatar: string;
-}
 
 interface Product extends Models.Document {
   name: string;
@@ -44,7 +36,8 @@ export default function UserInfo() {
     const fetchUserAndProducts = async () => {
       try {
         const userData = await getCurrentUser();
-        setUser(userData as unknown as User);
+        console.log("Fetched user data:", userData); 
+        setUser(userData);
         const userProducts = await databases.listDocuments<Product>(
           appwriteConfig.databaseId,
           appwriteConfig.productsCollectionId,
@@ -84,17 +77,23 @@ export default function UserInfo() {
 
         const avatarUrl = storage.getFilePreview(appwriteConfig.storageId, file.$id).toString();
 
+        console.log("Updating user with ID:", user.id); 
+        if (!user.id) {
+          throw new Error("User document ID is missing");
+        }
+
         const updatedUser = await databases.updateDocument<User>(
           appwriteConfig.databaseId,
           appwriteConfig.usersCollectionId,
-          user.$id,
+          user.id, 
           { avatar: avatarUrl }
         );
-        setUser(updatedUser);
+        setUser(updatedUser); 
         Alert.alert("Success", "Avatar updated successfully!");
       }
     } catch (err: any) {
-      Alert.alert("Error", "Failed to upload avatar: " + err.message);
+      console.error("Avatar upload error:", err);
+      Alert.alert("Error", "Failed to upload avatar: " + (err.message || "Unknown error"));
     } finally {
       setAvatarUploading(false);
     }
@@ -195,14 +194,13 @@ export default function UserInfo() {
           </View>
         </View>
 
-        {/* Products FlatList */}
         <View style={styles.productsContainer}>
           <Text style={styles.sectionTitle}>Your Products</Text>
           <FlatList
             data={products}
             renderItem={renderProductItem}
             keyExtractor={(item) => item.$id}
-            scrollEnabled={false} // Disable FlatList scrolling
+            scrollEnabled={false}
             ListEmptyComponent={<Text style={styles.emptyText}>No products uploaded yet.</Text>}
           />
         </View>
